@@ -38,8 +38,7 @@ from typing import Any, Callable
 
 import aiosqlite
 import httpx
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from apscheduler.triggers.cron import CronTrigger
+from apscheduler.schedulers.background import BackgroundScheduler
 from dotenv import load_dotenv
 import os
 # Telegram imports removed (web mode)
@@ -3406,7 +3405,6 @@ def setup_logging():
 
 def start_scheduler():
     """BackgroundScheduler — Flask context'te (event loop olmadan) çalışır."""
-    from apscheduler.schedulers.background import BackgroundScheduler
 
     def _job():
         """Sync wrapper: asyncio.run ile async raporu çalıştır."""
