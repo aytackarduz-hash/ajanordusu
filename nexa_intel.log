@@ -1,0 +1,421 @@
+2026-03-26 16:57:37 | INFO     | __main__                       | Loglama sistemi başlatıldı.
+2026-03-26 16:57:37 | INFO     | __main__                       | ============================================================
+2026-03-26 16:57:37 | INFO     | __main__                       |   NEXA DEEP INTELLIGENCE v5.0 BAŞLATIYOR
+2026-03-26 16:57:37 | INFO     | __main__                       |   2026-03-26 16:57:37
+2026-03-26 16:57:37 | INFO     | __main__                       | ============================================================
+2026-03-26 16:57:37 | INFO     | memory                         | Memory engine initialized: nexa_memory.db
+2026-03-26 16:57:37 | INFO     | __main__                       | ✅ Hafıza motoru başlatıldı.
+2026-03-26 16:57:37 | INFO     | telegram_bot                   | Telegram bot oluşturuldu.
+2026-03-26 16:57:37 | INFO     | __main__                       | ✅ Zamanlayıcı başlatıldı: her gün 09:00 Türkiye saati
+2026-03-26 16:57:37 | INFO     | __main__                       | 📅 Sonraki çalışma: 2026-03-27 09:00 +03
+2026-03-26 16:57:37 | INFO     | __main__                       | 🤖 Telegram bot polling başlatılıyor...
+2026-03-26 16:57:37 | INFO     | __main__                       | Hazır! /report komutuyla manuel rapor alabilirsin.
+2026-03-26 16:57:37 | INFO     | __main__                       | ------------------------------------------------------------
+2026-03-26 17:10:05 | INFO     | __main__                       | Loglama sistemi başlatıldı.
+2026-03-26 17:10:05 | INFO     | __main__                       | ============================================================
+2026-03-26 17:10:05 | INFO     | __main__                       |   NEXA DEEP INTELLIGENCE v5.0 BAŞLATIYOR
+2026-03-26 17:10:05 | INFO     | __main__                       |   2026-03-26 17:10:05
+2026-03-26 17:10:05 | INFO     | __main__                       | ============================================================
+2026-03-26 17:10:05 | INFO     | memory                         | Memory engine initialized: nexa_memory.db
+2026-03-26 17:10:05 | INFO     | __main__                       | ✅ Hafıza motoru başlatıldı.
+2026-03-26 17:10:06 | INFO     | telegram_bot                   | Telegram bot oluşturuldu.
+2026-03-26 17:10:06 | INFO     | __main__                       | ✅ Zamanlayıcı başlatıldı: her gün 09:00 Türkiye saati
+2026-03-26 17:10:06 | INFO     | __main__                       | 📅 Sonraki çalışma: 2026-03-27 09:00 +03
+2026-03-26 17:10:06 | INFO     | __main__                       | 🤖 Telegram bot polling başlatılıyor...
+2026-03-26 17:10:06 | INFO     | __main__                       | Hazır! /report komutuyla manuel rapor alabilirsin.
+2026-03-26 17:10:06 | INFO     | __main__                       | ------------------------------------------------------------
+2026-03-26 17:11:39 | INFO     | __main__                       | Loglama sistemi başlatıldı.
+2026-03-26 17:11:39 | INFO     | __main__                       | ============================================================
+2026-03-26 17:11:39 | INFO     | __main__                       |   NEXA DEEP INTELLIGENCE v5.0 BAŞLATIYOR
+2026-03-26 17:11:39 | INFO     | __main__                       |   2026-03-26 17:11:39
+2026-03-26 17:11:39 | INFO     | __main__                       | ============================================================
+2026-03-26 17:11:39 | INFO     | memory                         | Memory engine initialized: nexa_memory.db
+2026-03-26 17:11:39 | INFO     | __main__                       | ✅ Hafıza motoru başlatıldı.
+2026-03-26 17:11:39 | INFO     | telegram_bot                   | Telegram bot oluşturuldu.
+2026-03-26 17:11:39 | INFO     | __main__                       | ✅ Zamanlayıcı başlatıldı: her gün 09:00 Türkiye saati
+2026-03-26 17:11:39 | INFO     | __main__                       | 📅 Sonraki çalışma: 2026-03-27 09:00 +03
+2026-03-26 17:11:39 | INFO     | __main__                       | 🤖 Telegram bot polling başlatılıyor...
+2026-03-26 17:11:39 | INFO     | __main__                       | Hazır! /report komutuyla manuel rapor alabilirsin.
+2026-03-26 17:11:39 | INFO     | __main__                       | ------------------------------------------------------------
+2026-03-26 17:11:40 | INFO     | __main__                       | ✅ Bot polling aktif. Durdurmak için Ctrl+C.
+2026-03-26 17:11:57 | INFO     | intelligence_engine            | 🚀 Nexa Deep Intelligence v5.0 başlatıldı
+2026-03-26 17:11:57 | INFO     | telegram_bot                   | 🚀 Nexa Deep Intelligence v5.0 başlatıldı
+2026-03-26 17:11:57 | INFO     | intelligence_engine            | 📍 Vektör: adversarial | smart_money_footprint | Crypto_DeFi + AI_Systems_Architecture + Cognitive_Enhancement
+2026-03-26 17:11:57 | INFO     | telegram_bot                   | 📍 Vektör: adversarial | smart_money_footprint | Crypto_DeFi + AI_Systems_Architecture + Cognitive_Enhancement
+2026-03-26 17:11:57 | INFO     | intelligence_engine            | 🧠 Kaçınılacak kavramlar: 0
+2026-03-26 17:11:57 | INFO     | telegram_bot                   | 🧠 Kaçınılacak kavramlar: 0
+2026-03-26 17:11:57 | INFO     | intelligence_engine            | 🌐 Veri toplama başlıyor...
+2026-03-26 17:11:57 | INFO     | telegram_bot                   | 🌐 Veri toplama başlıyor...
+2026-03-26 17:11:57 | INFO     | data_mesh                      | DataMesh.fetch_all() başlıyor...
+2026-03-26 17:11:58 | INFO     | data_mesh                      | HN: 12 stories
+2026-03-26 17:11:58 | INFO     | data_mesh                      | Market: prices=True, fg=Extreme Fear
+2026-03-26 17:12:33 | INFO     | data_mesh                      | RSS: 93 items from 22 sources
+2026-03-26 17:12:33 | INFO     | data_mesh                      | DataMesh tamamlandı: intel=93, dev=12, hn=12, market_ok=True
+2026-03-26 17:12:33 | INFO     | intelligence_engine            | 📊 Veri hazır: 93 haber | 12 repo | 12 HN
+2026-03-26 17:12:33 | INFO     | telegram_bot                   | 📊 Veri hazır: 93 haber | 12 repo | 12 HN
+2026-03-26 17:12:33 | INFO     | intelligence_engine            | 🤖 8 ajan eş zamanlı başlatılıyor...
+2026-03-26 17:12:33 | INFO     | telegram_bot                   | 🤖 8 ajan eş zamanlı başlatılıyor...
+2026-03-26 17:12:33 | INFO     | intelligence_engine            |   ▶ ⏱️  Temporal Arbitraj çalışıyor...
+2026-03-26 17:12:33 | INFO     | telegram_bot                   |   ▶ ⏱️  Temporal Arbitraj çalışıyor...
+2026-03-26 17:12:33 | INFO     | intelligence_engine            |   ▶ 🔄  Kontra-Sentiment çalışıyor...
+2026-03-26 17:12:33 | INFO     | telegram_bot                   |   ▶ 🔄  Kontra-Sentiment çalışıyor...
+2026-03-26 17:12:33 | INFO     | intelligence_engine            |   ▶ 🔮  Zayıf Sinyal çalışıyor...
+2026-03-26 17:12:33 | INFO     | telegram_bot                   |   ▶ 🔮  Zayıf Sinyal çalışıyor...
+2026-03-26 17:12:34 | WARNING  | agents                         |   [TemporalArbitrageAgent] attempt 1 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:12:36 | WARNING  | agents                         |   [TemporalArbitrageAgent] attempt 2 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:12:40 | WARNING  | agents                         |   [TemporalArbitrageAgent] attempt 3 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:12:40 | ERROR    | intelligence_engine            |   ✗ ⏱️  Temporal Arbitraj FAILED: [TemporalArbitrageAgent] exhausted retries: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to
+2026-03-26 17:12:40 | INFO     | intelligence_engine            |   ▶ 🧬  Bilişsel Kenar çalışıyor...
+2026-03-26 17:12:40 | INFO     | telegram_bot                   |   ▶ 🧬  Bilişsel Kenar çalışıyor...
+2026-03-26 17:12:41 | WARNING  | agents                         |   [CognitiveEdgeAgent] attempt 1 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:12:43 | WARNING  | agents                         |   [CognitiveEdgeAgent] attempt 2 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:12:47 | WARNING  | agents                         |   [CognitiveEdgeAgent] attempt 3 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:12:47 | ERROR    | intelligence_engine            |   ✗ 🧬  Bilişsel Kenar FAILED: [CognitiveEdgeAgent] exhausted retries: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:12:47 | INFO     | intelligence_engine            |   ▶ 🌀  Sistem Çözülme çalışıyor...
+2026-03-26 17:12:47 | INFO     | telegram_bot                   |   ▶ 🌀  Sistem Çözülme çalışıyor...
+2026-03-26 17:12:48 | WARNING  | agents                         |   [SystemsBreakdownAgent] attempt 1 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:12:50 | WARNING  | agents                         |   [SystemsBreakdownAgent] attempt 2 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:12:54 | INFO     | agents                         |   [WeakSignalAggregatorAgent] ✓ 163 chars
+2026-03-26 17:12:54 | INFO     | intelligence_engine            |   ✓ 🔮  Zayıf Sinyal — 163 karakter
+2026-03-26 17:12:54 | INFO     | telegram_bot                   |   ✓ 🔮  Zayıf Sinyal — 163 karakter
+2026-03-26 17:12:54 | INFO     | intelligence_engine            |   ▶ 🚀  Narratif Velocity çalışıyor...
+2026-03-26 17:12:54 | INFO     | telegram_bot                   |   ▶ 🚀  Narratif Velocity çalışıyor...
+2026-03-26 17:12:54 | INFO     | agents                         |   [ContraSentimentAgent] ✓ 195 chars
+2026-03-26 17:12:54 | INFO     | intelligence_engine            |   ✓ 🔄  Kontra-Sentiment — 195 karakter
+2026-03-26 17:12:54 | INFO     | telegram_bot                   |   ✓ 🔄  Kontra-Sentiment — 195 karakter
+2026-03-26 17:12:54 | INFO     | intelligence_engine            |   ▶ 🔬  Derin Bilim çalışıyor...
+2026-03-26 17:12:54 | INFO     | telegram_bot                   |   ▶ 🔬  Derin Bilim çalışıyor...
+2026-03-26 17:12:54 | WARNING  | agents                         |   [SystemsBreakdownAgent] attempt 3 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:12:54 | ERROR    | intelligence_engine            |   ✗ 🌀  Sistem Çözülme FAILED: [SystemsBreakdownAgent] exhausted retries: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to:
+2026-03-26 17:12:54 | INFO     | intelligence_engine            |   ▶ 🏢  PropTech OSINT çalışıyor...
+2026-03-26 17:12:54 | INFO     | telegram_bot                   |   ▶ 🏢  PropTech OSINT çalışıyor...
+2026-03-26 17:12:54 | WARNING  | agents                         |   [NarrativeVelocityAgent] attempt 1 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:12:55 | WARNING  | agents                         |   [PropTechOSINTAgent] attempt 1 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:12:55 | WARNING  | agents                         |   [DeepScienceAgent] attempt 1 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:12:57 | WARNING  | agents                         |   [NarrativeVelocityAgent] attempt 2 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:12:57 | WARNING  | agents                         |   [PropTechOSINTAgent] attempt 2 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:12:57 | WARNING  | agents                         |   [DeepScienceAgent] attempt 2 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:13:01 | WARNING  | agents                         |   [NarrativeVelocityAgent] attempt 3 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:13:01 | ERROR    | intelligence_engine            |   ✗ 🚀  Narratif Velocity FAILED: [NarrativeVelocityAgent] exhausted retries: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to
+2026-03-26 17:13:01 | WARNING  | agents                         |   [DeepScienceAgent] attempt 3 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:13:01 | WARNING  | agents                         |   [PropTechOSINTAgent] attempt 3 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:13:01 | ERROR    | intelligence_engine            |   ✗ 🔬  Derin Bilim FAILED: [DeepScienceAgent] exhausted retries: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:13:01 | ERROR    | intelligence_engine            |   ✗ 🏢  PropTech OSINT FAILED: [PropTechOSINTAgent] exhausted retries: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:13:01 | INFO     | intelligence_engine            |   ▶ 🗡️ Stratejik Silah — sentez başlıyor...
+2026-03-26 17:13:01 | INFO     | telegram_bot                   |   ▶ 🗡️ Stratejik Silah — sentez başlıyor...
+2026-03-26 17:13:02 | WARNING  | agents                         |   [StrategicWeaponAgent] attempt 1 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:13:04 | WARNING  | agents                         |   [StrategicWeaponAgent] attempt 2 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:13:08 | WARNING  | agents                         |   [StrategicWeaponAgent] attempt 3 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:13:08 | ERROR    | intelligence_engine            |   ✗ Strategic Weapon FAILED: [StrategicWeaponAgent] exhausted retries: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:13:08 | INFO     | intelligence_engine            | 🔍 Kalite değerlendiriliyor...
+2026-03-26 17:13:08 | INFO     | telegram_bot                   | 🔍 Kalite değerlendiriliyor...
+2026-03-26 17:13:08 | ERROR    | telegram_bot                   | Rapor hatası: Can't instantiate abstract class QualityEvaluator without an implementation for abstract method 'run'
+Traceback (most recent call last):
+  File "C:\Users\ygt\Desktop\agent\telegram_bot.py", line 130, in cmd_report
+    result = await engine.run(triggered_by="telegram_command", progress_callback=on_progress)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ygt\Desktop\agent\intelligence_engine.py", line 133, in run
+    evaluator = QualityEvaluator()
+                ^^^^^^^^^^^^^^^^^^
+TypeError: Can't instantiate abstract class QualityEvaluator without an implementation for abstract method 'run'
+2026-03-26 17:20:46 | ERROR    | asyncio                        | unhandled exception during asyncio.run() shutdown
+task: <Task finished name='Task-1' coro=<main() done, defined at C:\Users\ygt\Desktop\agent\main.py:95> exception=RuntimeError('This Application is still running!')>
+Traceback (most recent call last):
+  File "C:\Users\ygt\Desktop\agent\main.py", line 163, in main
+    await app.updater.stop()
+  File "C:\Python312\Lib\site-packages\telegram\ext\_updater.py", line 744, in stop
+    await self._stop_polling()
+  File "C:\Python312\Lib\site-packages\telegram\ext\_updater.py", line 770, in _stop_polling
+    await self.__polling_cleanup_cb()
+  File "C:\Python312\Lib\site-packages\telegram\ext\_updater.py", line 400, in _get_updates_cleanup
+    await self.bot.get_updates(
+  File "C:\Python312\Lib\site-packages\telegram\ext\_extbot.py", line 676, in get_updates
+    updates = await super().get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\telegram\_bot.py", line 4780, in get_updates
+    await self._post(
+  File "C:\Python312\Lib\site-packages\telegram\_bot.py", line 703, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\telegram\ext\_extbot.py", line 372, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\telegram\_bot.py", line 732, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\telegram\request\_baserequest.py", line 198, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\telegram\request\_baserequest.py", line 305, in _request_wrapper
+    code, payload = await self.do_request(
+                    ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\telegram\request\_httpxrequest.py", line 279, in do_request
+    res = await self._client.request(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\httpx\_client.py", line 1540, in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\httpx\_client.py", line 1629, in send
+    response = await self._send_handling_auth(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\httpx\_client.py", line 1657, in _send_handling_auth
+    response = await self._send_handling_redirects(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\httpx\_client.py", line 1694, in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\httpx\_client.py", line 1730, in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\httpx\_transports\default.py", line 394, in handle_async_request
+    resp = await self._pool.handle_async_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\httpcore\_async\connection_pool.py", line 256, in handle_async_request
+    raise exc from None
+  File "C:\Python312\Lib\site-packages\httpcore\_async\connection_pool.py", line 236, in handle_async_request
+    response = await connection.handle_async_request(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\httpcore\_async\connection.py", line 103, in handle_async_request
+    return await self._connection.handle_async_request(request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\httpcore\_async\http11.py", line 136, in handle_async_request
+    raise exc
+  File "C:\Python312\Lib\site-packages\httpcore\_async\http11.py", line 106, in handle_async_request
+    ) = await self._receive_response_headers(**kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\httpcore\_async\http11.py", line 177, in _receive_response_headers
+    event = await self._receive_event(timeout=timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\httpcore\_async\http11.py", line 217, in _receive_event
+    data = await self._network_stream.read(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\site-packages\httpcore\_backends\anyio.py", line 35, in read
+    return await self._stream.receive(max_bytes=max_bytes)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ygt\AppData\Roaming\Python\Python312\site-packages\anyio\streams\tls.py", line 219, in receive
+    data = await self._call_sslobject_method(self._ssl_object.read, max_bytes)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ygt\AppData\Roaming\Python\Python312\site-packages\anyio\streams\tls.py", line 162, in _call_sslobject_method
+    data = await self.transport_stream.receive()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ygt\AppData\Roaming\Python\Python312\site-packages\anyio\_backends\_asyncio.py", line 1254, in receive
+    await self._protocol.read_event.wait()
+  File "C:\Python312\Lib\asyncio\locks.py", line 212, in wait
+    await fut
+asyncio.exceptions.CancelledError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\ygt\Desktop\agent\main.py", line 150, in main
+    async with app:
+  File "C:\Python312\Lib\site-packages\telegram\ext\_application.py", line 385, in __aexit__
+    await self.shutdown()
+  File "C:\Python312\Lib\site-packages\telegram\ext\_application.py", line 537, in shutdown
+    raise RuntimeError("This Application is still running!")
+RuntimeError: This Application is still running!
+2026-03-26 17:20:51 | INFO     | __main__                       | Loglama sistemi başlatıldı.
+2026-03-26 17:20:51 | INFO     | __main__                       | ============================================================
+2026-03-26 17:20:51 | INFO     | __main__                       |   NEXA DEEP INTELLIGENCE v5.0 BAŞLATIYOR
+2026-03-26 17:20:51 | INFO     | __main__                       |   2026-03-26 17:20:51
+2026-03-26 17:20:51 | INFO     | __main__                       | ============================================================
+2026-03-26 17:20:51 | INFO     | memory                         | Memory engine initialized: nexa_memory.db
+2026-03-26 17:20:51 | INFO     | __main__                       | ✅ Hafıza motoru başlatıldı.
+2026-03-26 17:20:52 | INFO     | telegram_bot                   | Telegram bot oluşturuldu.
+2026-03-26 17:20:52 | INFO     | __main__                       | ✅ Zamanlayıcı başlatıldı: her gün 09:00 Türkiye saati
+2026-03-26 17:20:52 | INFO     | __main__                       | 📅 Sonraki çalışma: 2026-03-27 09:00 +03
+2026-03-26 17:20:52 | INFO     | __main__                       | 🤖 Telegram bot polling başlatılıyor...
+2026-03-26 17:20:52 | INFO     | __main__                       | Hazır! /report komutuyla manuel rapor alabilirsin.
+2026-03-26 17:20:52 | INFO     | __main__                       | ------------------------------------------------------------
+2026-03-26 17:20:52 | INFO     | __main__                       | ✅ Bot polling aktif. Durdurmak için Ctrl+C.
+2026-03-26 17:21:00 | INFO     | intelligence_engine            | 🚀 Nexa Deep Intelligence v5.0 başlatıldı
+2026-03-26 17:21:00 | INFO     | telegram_bot                   | 🚀 Nexa Deep Intelligence v5.0 başlatıldı
+2026-03-26 17:21:00 | INFO     | intelligence_engine            | 📍 Vektör: adversarial | smart_money_footprint | Crypto_DeFi + AI_Systems_Architecture + Cognitive_Enhancement
+2026-03-26 17:21:00 | INFO     | telegram_bot                   | 📍 Vektör: adversarial | smart_money_footprint | Crypto_DeFi + AI_Systems_Architecture + Cognitive_Enhancement
+2026-03-26 17:21:00 | INFO     | intelligence_engine            | 🧠 Kaçınılacak kavramlar: 0
+2026-03-26 17:21:00 | INFO     | telegram_bot                   | 🧠 Kaçınılacak kavramlar: 0
+2026-03-26 17:21:00 | INFO     | intelligence_engine            | 🌐 Veri toplama başlıyor...
+2026-03-26 17:21:00 | INFO     | telegram_bot                   | 🌐 Veri toplama başlıyor...
+2026-03-26 17:21:00 | INFO     | data_mesh                      | DataMesh.fetch_all() başlıyor...
+2026-03-26 17:21:01 | INFO     | data_mesh                      | HN: 12 stories
+2026-03-26 17:21:01 | INFO     | data_mesh                      | Market: prices=True, fg=Extreme Fear
+2026-03-26 17:21:12 | INFO     | data_mesh                      | RSS: 93 items from 22 sources
+2026-03-26 17:21:12 | INFO     | data_mesh                      | DataMesh tamamlandı: intel=93, dev=12, hn=12, market_ok=True
+2026-03-26 17:21:12 | INFO     | intelligence_engine            | 📊 Veri hazır: 93 haber | 12 repo | 12 HN
+2026-03-26 17:21:12 | INFO     | telegram_bot                   | 📊 Veri hazır: 93 haber | 12 repo | 12 HN
+2026-03-26 17:21:12 | INFO     | intelligence_engine            | 🤖 8 ajan eş zamanlı başlatılıyor...
+2026-03-26 17:21:12 | INFO     | telegram_bot                   | 🤖 8 ajan eş zamanlı başlatılıyor...
+2026-03-26 17:21:12 | INFO     | intelligence_engine            |   ▶ ⏱️  Temporal Arbitraj çalışıyor...
+2026-03-26 17:21:12 | INFO     | telegram_bot                   |   ▶ ⏱️  Temporal Arbitraj çalışıyor...
+2026-03-26 17:21:13 | INFO     | intelligence_engine            |   ▶ 🔄  Kontra-Sentiment çalışıyor...
+2026-03-26 17:21:13 | INFO     | telegram_bot                   |   ▶ 🔄  Kontra-Sentiment çalışıyor...
+2026-03-26 17:21:13 | INFO     | intelligence_engine            |   ▶ 🔮  Zayıf Sinyal çalışıyor...
+2026-03-26 17:21:13 | INFO     | telegram_bot                   |   ▶ 🔮  Zayıf Sinyal çalışıyor...
+2026-03-26 17:21:14 | WARNING  | agents                         |   [TemporalArbitrageAgent] attempt 1 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:21:14 | WARNING  | agents                         |   [ContraSentimentAgent] attempt 1 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:21:14 | WARNING  | agents                         |   [WeakSignalAggregatorAgent] attempt 1 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:21:16 | WARNING  | agents                         |   [ContraSentimentAgent] attempt 2 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:21:16 | WARNING  | agents                         |   [TemporalArbitrageAgent] attempt 2 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:21:16 | WARNING  | agents                         |   [WeakSignalAggregatorAgent] attempt 2 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:21:20 | WARNING  | agents                         |   [ContraSentimentAgent] attempt 3 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:21:20 | ERROR    | intelligence_engine            |   ✗ 🔄  Kontra-Sentiment FAILED: [ContraSentimentAgent] exhausted retries: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: 
+2026-03-26 17:21:20 | INFO     | intelligence_engine            |   ▶ 🧬  Bilişsel Kenar çalışıyor...
+2026-03-26 17:21:20 | INFO     | telegram_bot                   |   ▶ 🧬  Bilişsel Kenar çalışıyor...
+2026-03-26 17:21:20 | WARNING  | agents                         |   [TemporalArbitrageAgent] attempt 3 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:21:20 | ERROR    | intelligence_engine            |   ✗ ⏱️  Temporal Arbitraj FAILED: [TemporalArbitrageAgent] exhausted retries: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to
+2026-03-26 17:21:20 | INFO     | intelligence_engine            |   ▶ 🌀  Sistem Çözülme çalışıyor...
+2026-03-26 17:21:20 | INFO     | telegram_bot                   |   ▶ 🌀  Sistem Çözülme çalışıyor...
+2026-03-26 17:21:20 | WARNING  | agents                         |   [WeakSignalAggregatorAgent] attempt 3 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:21:20 | ERROR    | intelligence_engine            |   ✗ 🔮  Zayıf Sinyal FAILED: [WeakSignalAggregatorAgent] exhausted retries: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head
+2026-03-26 17:21:20 | INFO     | intelligence_engine            |   ▶ 🚀  Narratif Velocity çalışıyor...
+2026-03-26 17:21:20 | INFO     | telegram_bot                   |   ▶ 🚀  Narratif Velocity çalışıyor...
+2026-03-26 17:21:21 | WARNING  | agents                         |   [CognitiveEdgeAgent] attempt 1 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:21:21 | WARNING  | agents                         |   [SystemsBreakdownAgent] attempt 1 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:21:21 | WARNING  | agents                         |   [NarrativeVelocityAgent] attempt 1 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:21:23 | WARNING  | agents                         |   [CognitiveEdgeAgent] attempt 2 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:21:23 | WARNING  | agents                         |   [SystemsBreakdownAgent] attempt 2 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:21:23 | WARNING  | agents                         |   [NarrativeVelocityAgent] attempt 2 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:21:27 | WARNING  | agents                         |   [CognitiveEdgeAgent] attempt 3 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:21:27 | ERROR    | intelligence_engine            |   ✗ 🧬  Bilişsel Kenar FAILED: [CognitiveEdgeAgent] exhausted retries: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:21:27 | INFO     | intelligence_engine            |   ▶ 🔬  Derin Bilim çalışıyor...
+2026-03-26 17:21:27 | INFO     | telegram_bot                   |   ▶ 🔬  Derin Bilim çalışıyor...
+2026-03-26 17:21:27 | WARNING  | agents                         |   [SystemsBreakdownAgent] attempt 3 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:21:27 | WARNING  | agents                         |   [NarrativeVelocityAgent] attempt 3 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:21:27 | ERROR    | intelligence_engine            |   ✗ 🌀  Sistem Çözülme FAILED: [SystemsBreakdownAgent] exhausted retries: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to:
+2026-03-26 17:21:27 | INFO     | intelligence_engine            |   ▶ 🏢  PropTech OSINT çalışıyor...
+2026-03-26 17:21:27 | INFO     | telegram_bot                   |   ▶ 🏢  PropTech OSINT çalışıyor...
+2026-03-26 17:21:27 | ERROR    | intelligence_engine            |   ✗ 🚀  Narratif Velocity FAILED: [NarrativeVelocityAgent] exhausted retries: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to
+2026-03-26 17:21:28 | WARNING  | agents                         |   [DeepScienceAgent] attempt 1 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:21:28 | WARNING  | agents                         |   [PropTechOSINTAgent] attempt 1 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:21:30 | WARNING  | agents                         |   [PropTechOSINTAgent] attempt 2 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:21:30 | WARNING  | agents                         |   [DeepScienceAgent] attempt 2 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:21:34 | WARNING  | agents                         |   [PropTechOSINTAgent] attempt 3 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:21:34 | WARNING  | agents                         |   [DeepScienceAgent] attempt 3 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:21:34 | ERROR    | intelligence_engine            |   ✗ 🏢  PropTech OSINT FAILED: [PropTechOSINTAgent] exhausted retries: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:21:34 | ERROR    | intelligence_engine            |   ✗ 🔬  Derin Bilim FAILED: [DeepScienceAgent] exhausted retries: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:21:34 | INFO     | intelligence_engine            |   ▶ 🗡️ Stratejik Silah — sentez başlıyor...
+2026-03-26 17:21:34 | INFO     | telegram_bot                   |   ▶ 🗡️ Stratejik Silah — sentez başlıyor...
+2026-03-26 17:21:34 | WARNING  | agents                         |   [StrategicWeaponAgent] attempt 1 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:21:37 | WARNING  | agents                         |   [StrategicWeaponAgent] attempt 2 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:21:41 | WARNING  | agents                         |   [StrategicWeaponAgent] attempt 3 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:21:41 | ERROR    | intelligence_engine            |   ✗ Strategic Weapon FAILED: [StrategicWeaponAgent] exhausted retries: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:21:41 | INFO     | intelligence_engine            | 🔍 Kalite değerlendiriliyor...
+2026-03-26 17:21:41 | INFO     | telegram_bot                   | 🔍 Kalite değerlendiriliyor...
+2026-03-26 17:21:41 | WARNING  | agents                         |   [QualityEvaluator] attempt 1 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:21:43 | WARNING  | agents                         |   [QualityEvaluator] attempt 2 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:21:47 | WARNING  | agents                         |   [QualityEvaluator] attempt 3 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:21:47 | WARNING  | agents                         | Quality eval failed: [QualityEvaluator] exhausted retries: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:21:48 | INFO     | intelligence_engine            | 📈 Kalite: 7.5/10 | En zayıf: unknown
+2026-03-26 17:21:48 | INFO     | telegram_bot                   | 📈 Kalite: 7.5/10 | En zayıf: unknown
+2026-03-26 17:21:48 | INFO     | intelligence_engine            | 💾 Hafıza güncellendi: 40 kavram kaydedildi
+2026-03-26 17:21:48 | INFO     | telegram_bot                   | 💾 Hafıza güncellendi: 40 kavram kaydedildi
+2026-03-26 17:21:48 | INFO     | memory                         | Cleaned up data older than 90 days
+2026-03-26 17:21:55 | INFO     | telegram_bot                   | Rapor gönderildi: 12 mesaj
+2026-03-26 17:23:31 | INFO     | __main__                       | Loglama sistemi başlatıldı.
+2026-03-26 17:23:31 | INFO     | __main__                       | ============================================================
+2026-03-26 17:23:31 | INFO     | __main__                       |   NEXA DEEP INTELLIGENCE v5.0 BAŞLATIYOR
+2026-03-26 17:23:31 | INFO     | __main__                       |   2026-03-26 17:23:31
+2026-03-26 17:23:31 | INFO     | __main__                       | ============================================================
+2026-03-26 17:23:31 | INFO     | memory                         | Memory engine initialized: nexa_memory.db
+2026-03-26 17:23:31 | INFO     | __main__                       | ✅ Hafıza motoru başlatıldı.
+2026-03-26 17:23:32 | INFO     | telegram_bot                   | Telegram bot oluşturuldu.
+2026-03-26 17:23:32 | INFO     | __main__                       | ✅ Zamanlayıcı başlatıldı: her gün 09:00 Türkiye saati
+2026-03-26 17:23:32 | INFO     | __main__                       | 📅 Sonraki çalışma: 2026-03-27 09:00 +03
+2026-03-26 17:23:32 | INFO     | __main__                       | 🤖 Telegram bot polling başlatılıyor...
+2026-03-26 17:23:32 | INFO     | __main__                       | Hazır! /report komutuyla manuel rapor alabilirsin.
+2026-03-26 17:23:32 | INFO     | __main__                       | ------------------------------------------------------------
+2026-03-26 17:23:32 | INFO     | __main__                       | ✅ Bot polling aktif. Durdurmak için Ctrl+C.
+2026-03-26 17:23:41 | INFO     | intelligence_engine            | 🚀 Nexa Deep Intelligence v5.0 başlatıldı
+2026-03-26 17:23:41 | INFO     | telegram_bot                   | 🚀 Nexa Deep Intelligence v5.0 başlatıldı
+2026-03-26 17:23:41 | INFO     | intelligence_engine            | 📍 Vektör: adversarial | smart_money_footprint | Crypto_DeFi + AI_Systems_Architecture + Cognitive_Enhancement
+2026-03-26 17:23:41 | INFO     | telegram_bot                   | 📍 Vektör: adversarial | smart_money_footprint | Crypto_DeFi + AI_Systems_Architecture + Cognitive_Enhancement
+2026-03-26 17:23:41 | INFO     | intelligence_engine            | 🧠 Kaçınılacak kavramlar: 40
+2026-03-26 17:23:41 | INFO     | telegram_bot                   | 🧠 Kaçınılacak kavramlar: 40
+2026-03-26 17:23:41 | INFO     | intelligence_engine            | 🌐 Veri toplama başlıyor...
+2026-03-26 17:23:41 | INFO     | telegram_bot                   | 🌐 Veri toplama başlıyor...
+2026-03-26 17:23:41 | INFO     | data_mesh                      | DataMesh.fetch_all() başlıyor...
+2026-03-26 17:23:42 | INFO     | data_mesh                      | HN: 12 stories
+2026-03-26 17:23:43 | INFO     | data_mesh                      | Market: prices=True, fg=Extreme Fear
+2026-03-26 17:23:50 | INFO     | data_mesh                      | RSS: 93 items from 22 sources
+2026-03-26 17:23:50 | INFO     | data_mesh                      | DataMesh tamamlandı: intel=93, dev=12, hn=12, market_ok=True
+2026-03-26 17:23:50 | INFO     | intelligence_engine            | 📊 Veri hazır: 93 haber | 12 repo | 12 HN
+2026-03-26 17:23:50 | INFO     | telegram_bot                   | 📊 Veri hazır: 93 haber | 12 repo | 12 HN
+2026-03-26 17:23:50 | INFO     | intelligence_engine            | 🤖 8 ajan eş zamanlı başlatılıyor...
+2026-03-26 17:23:50 | INFO     | telegram_bot                   | 🤖 8 ajan eş zamanlı başlatılıyor...
+2026-03-26 17:23:50 | INFO     | intelligence_engine            |   ▶ ⏱️  Temporal Arbitraj çalışıyor...
+2026-03-26 17:23:50 | INFO     | telegram_bot                   |   ▶ ⏱️  Temporal Arbitraj çalışıyor...
+2026-03-26 17:23:50 | INFO     | intelligence_engine            |   ▶ 🔄  Kontra-Sentiment çalışıyor...
+2026-03-26 17:23:50 | INFO     | telegram_bot                   |   ▶ 🔄  Kontra-Sentiment çalışıyor...
+2026-03-26 17:23:50 | INFO     | intelligence_engine            |   ▶ 🔮  Zayıf Sinyal çalışıyor...
+2026-03-26 17:23:50 | INFO     | telegram_bot                   |   ▶ 🔮  Zayıf Sinyal çalışıyor...
+2026-03-26 17:24:02 | INFO     | agents                         |   [TemporalArbitrageAgent] ✓ 187 chars
+2026-03-26 17:24:02 | INFO     | intelligence_engine            |   ✓ ⏱️  Temporal Arbitraj — 187 karakter
+2026-03-26 17:24:02 | INFO     | telegram_bot                   |   ✓ ⏱️  Temporal Arbitraj — 187 karakter
+2026-03-26 17:24:02 | INFO     | intelligence_engine            |   ▶ 🧬  Bilişsel Kenar çalışıyor...
+2026-03-26 17:24:02 | INFO     | telegram_bot                   |   ▶ 🧬  Bilişsel Kenar çalışıyor...
+2026-03-26 17:24:09 | INFO     | agents                         |   [WeakSignalAggregatorAgent] ✓ 151 chars
+2026-03-26 17:24:09 | INFO     | intelligence_engine            |   ✓ 🔮  Zayıf Sinyal — 151 karakter
+2026-03-26 17:24:09 | INFO     | telegram_bot                   |   ✓ 🔮  Zayıf Sinyal — 151 karakter
+2026-03-26 17:24:09 | INFO     | intelligence_engine            |   ▶ 🌀  Sistem Çözülme çalışıyor...
+2026-03-26 17:24:09 | INFO     | telegram_bot                   |   ▶ 🌀  Sistem Çözülme çalışıyor...
+2026-03-26 17:24:13 | INFO     | agents                         |   [ContraSentimentAgent] ✓ 880 chars
+2026-03-26 17:24:13 | INFO     | intelligence_engine            |   ✓ 🔄  Kontra-Sentiment — 880 karakter
+2026-03-26 17:24:13 | INFO     | telegram_bot                   |   ✓ 🔄  Kontra-Sentiment — 880 karakter
+2026-03-26 17:24:13 | INFO     | intelligence_engine            |   ▶ 🚀  Narratif Velocity çalışıyor...
+2026-03-26 17:24:13 | INFO     | telegram_bot                   |   ▶ 🚀  Narratif Velocity çalışıyor...
+2026-03-26 17:24:21 | INFO     | agents                         |   [CognitiveEdgeAgent] ✓ 227 chars
+2026-03-26 17:24:21 | INFO     | intelligence_engine            |   ✓ 🧬  Bilişsel Kenar — 227 karakter
+2026-03-26 17:24:21 | INFO     | telegram_bot                   |   ✓ 🧬  Bilişsel Kenar — 227 karakter
+2026-03-26 17:24:21 | INFO     | intelligence_engine            |   ▶ 🔬  Derin Bilim çalışıyor...
+2026-03-26 17:24:21 | INFO     | telegram_bot                   |   ▶ 🔬  Derin Bilim çalışıyor...
+2026-03-26 17:24:22 | INFO     | agents                         |   [NarrativeVelocityAgent] ✓ 182 chars
+2026-03-26 17:24:22 | INFO     | intelligence_engine            |   ✓ 🚀  Narratif Velocity — 182 karakter
+2026-03-26 17:24:22 | INFO     | telegram_bot                   |   ✓ 🚀  Narratif Velocity — 182 karakter
+2026-03-26 17:24:22 | INFO     | intelligence_engine            |   ▶ 🏢  PropTech OSINT çalışıyor...
+2026-03-26 17:24:22 | INFO     | telegram_bot                   |   ▶ 🏢  PropTech OSINT çalışıyor...
+2026-03-26 17:24:23 | WARNING  | agents                         |   [PropTechOSINTAgent] attempt 1 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:24:25 | WARNING  | agents                         |   [PropTechOSINTAgent] attempt 2 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:24:29 | INFO     | agents                         |   [SystemsBreakdownAgent] ✓ 165 chars
+2026-03-26 17:24:29 | INFO     | intelligence_engine            |   ✓ 🌀  Sistem Çözülme — 165 karakter
+2026-03-26 17:24:29 | INFO     | telegram_bot                   |   ✓ 🌀  Sistem Çözülme — 165 karakter
+2026-03-26 17:24:29 | WARNING  | agents                         |   [PropTechOSINTAgent] attempt 3 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:24:29 | ERROR    | intelligence_engine            |   ✗ 🏢  PropTech OSINT FAILED: [PropTechOSINTAgent] exhausted retries: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:24:32 | WARNING  | agents                         |   [DeepScienceAgent] attempt 1 failed: HTTP 503: {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status'
+2026-03-26 17:24:34 | WARNING  | agents                         |   [DeepScienceAgent] attempt 2 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:24:38 | WARNING  | agents                         |   [DeepScienceAgent] attempt 3 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:24:38 | ERROR    | intelligence_engine            |   ✗ 🔬  Derin Bilim FAILED: [DeepScienceAgent] exhausted retries: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:24:38 | INFO     | intelligence_engine            |   ▶ 🗡️ Stratejik Silah — sentez başlıyor...
+2026-03-26 17:24:38 | INFO     | telegram_bot                   |   ▶ 🗡️ Stratejik Silah — sentez başlıyor...
+2026-03-26 17:24:39 | WARNING  | agents                         |   [StrategicWeaponAgent] attempt 1 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:24:41 | WARNING  | agents                         |   [StrategicWeaponAgent] attempt 2 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:24:45 | WARNING  | agents                         |   [StrategicWeaponAgent] attempt 3 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:24:45 | ERROR    | intelligence_engine            |   ✗ Strategic Weapon FAILED: [StrategicWeaponAgent] exhausted retries: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:24:45 | INFO     | intelligence_engine            | 🔍 Kalite değerlendiriliyor...
+2026-03-26 17:24:45 | INFO     | telegram_bot                   | 🔍 Kalite değerlendiriliyor...
+2026-03-26 17:24:46 | WARNING  | agents                         |   [QualityEvaluator] attempt 1 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:24:48 | WARNING  | agents                         |   [QualityEvaluator] attempt 2 failed: HTTP 429: {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: ht
+2026-03-26 17:24:55 | INFO     | agents                         |   [QualityEvaluator] ✓ 43 chars
+2026-03-26 17:24:55 | WARNING  | agents                         | Quality eval failed: Expecting property name enclosed in double quotes: line 3 column 20 (char 35)
+2026-03-26 17:24:55 | INFO     | intelligence_engine            | 📈 Kalite: 7.5/10 | En zayıf: unknown
+2026-03-26 17:24:55 | INFO     | telegram_bot                   | 📈 Kalite: 7.5/10 | En zayıf: unknown
+2026-03-26 17:24:55 | INFO     | intelligence_engine            | 💾 Hafıza güncellendi: 80 kavram kaydedildi
+2026-03-26 17:24:55 | INFO     | telegram_bot                   | 💾 Hafıza güncellendi: 80 kavram kaydedildi
+2026-03-26 17:24:55 | INFO     | memory                         | Cleaned up data older than 90 days
+2026-03-26 17:24:57 | ERROR    | telegram_bot                   | Mesaj gönderme hatası (mesaj 3): Can't parse entities: unexpected end tag at byte offset 141
+2026-03-26 17:24:59 | ERROR    | telegram_bot                   | Mesaj gönderme hatası (mesaj 8): Can't parse entities: can't find end tag corresponding to start tag "b"
+2026-03-26 17:25:01 | INFO     | telegram_bot                   | Rapor gönderildi: 12 mesaj
+2026-03-28 20:55:24 | INFO     | __main__                       | ============================================================
+2026-03-28 20:55:24 | INFO     | __main__                       |   NEXA DEEP INTELLIGENCE v6.0 BAŞLATIYOR
+2026-03-28 20:55:24 | INFO     | __main__                       |   2026-03-28 20:55:24
+2026-03-28 20:55:24 | INFO     | __main__                       |   9 Ajan · 6 Research Ajanı · Sabah 09:00
+2026-03-28 20:55:24 | INFO     | __main__                       | ============================================================
+2026-03-28 20:55:24 | INFO     | __main__                       | ✅ Hafıza motoru başlatıldı.
+2026-03-28 20:55:25 | INFO     | __main__                       | Nexa Bot oluşturuldu — 14 komut hazır.
+2026-03-28 20:55:25 | INFO     | __main__                       | ✅ Zamanlayıcı: her gün 09:00 Türkiye saati
+2026-03-28 20:55:25 | INFO     | __main__                       | 📅 Sonraki çalışma: 2026-03-29 09:00 +03
+2026-03-28 20:55:25 | INFO     | __main__                       | 🤖 Telegram bot başlatılıyor...
+2026-03-28 20:55:25 | INFO     | __main__                       | Komutlar: /report /research /proptech /longevity /ai /crypto /idea /osint
+2026-03-28 20:55:25 | INFO     | __main__                       | ✅ Bot polling aktif. Durdurmak için Ctrl+C.
+2026-03-28 20:55:41 | INFO     | __main__                       | 🚀 Nexa Deep Intelligence v6.0 başlatıldı
+2026-03-28 20:55:41 | INFO     | __main__                       | 📍 Vektör: second_order | niche_community_signal | Longevity_Biotech+Cognitive_Enhancement
+2026-03-28 20:55:41 | INFO     | __main__                       | 🌐 Veri toplama başlıyor...
