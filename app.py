@@ -2918,11 +2918,23 @@ async def main():
             # ── POLLING MODU (Local geliştirme) ─────────────────────────────
             await app.bot.delete_webhook(drop_pending_updates=True)
             log.info("POLLING MODU (local) — Webhook temizlendi.")
-            await app.updater.start_polling(
-                drop_pending_updates=True,
-                allowed_updates=["message", "callback_query"],
-            )
-            log.info("Bot polling aktif.")
+            # Conflict varsa bekle ve tekrar dene (eski instance'ın ölmesini bekle)
+            for attempt in range(1, 6):
+                try:
+                    await app.bot.delete_webhook(drop_pending_updates=True)
+                    await app.updater.start_polling(
+                        drop_pending_updates=True,
+                        allowed_updates=["message", "callback_query"],
+                        error_callback=lambda exc: log.warning(f"Polling hatası (geçici): {exc}"),
+                    )
+                    log.info(f"Bot polling aktif (deneme {attempt}).")
+                    break
+                except Exception as poll_err:
+                    if "Conflict" in str(poll_err) and attempt < 5:
+                        log.warning(f"Conflict — eski instance ölüyor, {30*attempt}s bekleniyor... (deneme {attempt}/5)")
+                        await asyncio.sleep(30 * attempt)
+                    else:
+                        raise
 
         try:
             while True:
