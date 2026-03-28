@@ -42,15 +42,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from dotenv import load_dotenv
 import os
-from telegram import Update
-from telegram.constants import ParseMode
-from telegram.ext import (
-    Application,
-    CommandHandler,
-    ContextTypes,
-    MessageHandler,
-    filters,
-)
+# Telegram imports removed (web mode)
 
 load_dotenv()
 
@@ -2337,641 +2329,1142 @@ Her sabah <code>{config.DAILY_HOUR:02d}:{config.DAILY_MINUTE:02d}</code>'da tam 
 PropTech · AI Security · Longevity · Kripto · OSINT"""
 
 
+
 # ═════════════════════════════════════════════════════════════════════════════
-# ⑪ TELEGRAM BOT
+# ⑪ FLASK WEB UYGULAMASI
 # ═════════════════════════════════════════════════════════════════════════════
-def is_authorized(update: Update) -> bool:
-    if not config.TELEGRAM_CHAT_ID:
-        return True
-    return str(update.effective_chat.id) == config.TELEGRAM_CHAT_ID
+import threading
+import queue as stdlib_queue
+import uuid
+import time
+from flask import Flask, Response, session, request, jsonify, stream_with_context, redirect
+
+flask_app = Flask(__name__)
+flask_app.secret_key = os.getenv("SECRET_KEY", "nexa-x9k2-classified-2026")
+flask_app.config["SESSION_COOKIE_HTTPONLY"] = True
+flask_app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+
+WEB_PASSWORD = os.getenv("WEB_PASSWORD", "nexa2026")
+
+# Active streaming jobs: job_id → Queue
+_jobs: dict[str, stdlib_queue.Queue] = {}
+
+# ─── AUTH ────────────────────────────────────────────────────────────────────
+def login_required(f):
+    from functools import wraps
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not session.get("ok"):
+            return jsonify({"error": "unauthorized"}), 401
+        return f(*args, **kwargs)
+    return decorated
 
 
-async def send_messages(update: Update, context: ContextTypes.DEFAULT_TYPE,
-                        messages: list[str], parse_mode: str = ParseMode.HTML):
-    chat_id = update.effective_chat.id
-    for i, msg in enumerate(messages):
-        if not msg.strip():
-            continue
+def _run_async(coro_factory, chunk_queue: stdlib_queue.Queue):
+    """Async coroutine'i thread'de çalıştır, sonucu chunk_queue'ya at."""
+    async def wrapper():
         try:
-            await context.bot.send_message(
-                chat_id=chat_id, text=msg, parse_mode=parse_mode,
-                disable_web_page_preview=True,
-            )
-            if i < len(messages) - 1:
-                await asyncio.sleep(0.5)
+            result = await coro_factory()
+            # 35 karakterlik parçalara böl → typewriter efekti
+            for i in range(0, len(result), 35):
+                chunk_queue.put(("chunk", result[i:i+35]))
+                await asyncio.sleep(0.008)
+            chunk_queue.put(("done", result))
         except Exception as e:
-            logger.error(f"Mesaj gönderme hatası: {e}")
-            try:
-                plain = re.sub(r"<[^>]+>", "", msg)
-                await context.bot.send_message(chat_id=chat_id, text=plain[:4000],
-                                               disable_web_page_preview=True)
-            except Exception as e2:
-                logger.error(f"Plain text de başarısız: {e2}")
+            chunk_queue.put(("error", str(e)[:300]))
+        finally:
+            chunk_queue.put(None)
 
-
-async def send_typing(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await context.bot.send_chat_action(chat_id=update.effective_chat.id, action="typing")
-
-
-# ─── KOMUT HANDLERLARı ───────────────────────────────────────────────────────
-
-async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if not is_authorized(update):
-        await update.message.reply_text("⛔ Yetkisiz erişim.")
-        return
-    await send_messages(update, context, [build_help_message()])
-
-
-async def cmd_help(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if not is_authorized(update):
-        return
-    await send_messages(update, context, [build_help_message()])
-
-
-async def cmd_report(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if not is_authorized(update):
-        await update.message.reply_text("⛔ Yetkisiz erişim.")
-        return
-    await send_typing(update, context)
-    start_msg = await update.message.reply_text(
-        "🚀 <b>Nexa Deep Intelligence v6.0 başlatıldı...</b>\n9 ajan eş zamanlı çalışacak. ~3-5 dakika sürebilir.",
-        parse_mode=ParseMode.HTML,
-    )
-    mem = context.bot_data.get("memory")
-    engine = IntelligenceEngine(mem)
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
     try:
-        result = await engine.run(triggered_by="telegram_command")
-        await engine.close()
-        avg_q = await mem.avg_quality(10)
-        messages = build_telegram_messages(result, avg_quality_10d=avg_q)
+        loop.run_until_complete(wrapper())
+    finally:
+        loop.close()
+
+
+def _start_job(coro_factory) -> str:
+    job_id = str(uuid.uuid4())[:8]
+    q = stdlib_queue.Queue(maxsize=0)
+    _jobs[job_id] = q
+    t = threading.Thread(target=_run_async, args=(coro_factory, q), daemon=True)
+    t.start()
+    return job_id
+
+
+# ─── ROUTES ──────────────────────────────────────────────────────────────────
+@flask_app.route("/")
+def index():
+    if not session.get("ok"):
+        return _render_login()
+    return _render_dashboard()
+
+
+@flask_app.route("/api/login", methods=["POST"])
+def api_login():
+    data = request.get_json(silent=True) or {}
+    if data.get("password") == WEB_PASSWORD:
+        session["ok"] = True
+        session.permanent = True
+        return jsonify({"ok": True})
+    return jsonify({"ok": False, "error": "Yanlış şifre"}), 401
+
+
+@flask_app.route("/api/logout", methods=["POST"])
+def api_logout():
+    session.clear()
+    return jsonify({"ok": True})
+
+
+@flask_app.route("/api/run", methods=["POST"])
+@login_required
+def api_run():
+    data = request.get_json(silent=True) or {}
+    cmd = data.get("cmd", "")
+    arg = data.get("arg", "").strip()
+
+    def make_ctx():
+        now = datetime.now()
+        vector = DiversityEngine.today_vector()
+        return AgentContext(
+            bundle=DataBundle(),
+            vector=vector,
+            avoid_concepts=[],
+            insights={},
+            date_str=now.strftime("%d %B %Y %A"),
+            time_str=now.strftime("%H:%M"),
+        )
+
+    async def _init_memory():
+        await memory.init()
+
+    # Hafızayı başlat (ilk çalıştırmada)
+    try:
+        loop = asyncio.new_event_loop()
+        loop.run_until_complete(_init_memory())
+        loop.close()
+    except Exception:
+        pass
+
+    if cmd == "report":
+        async def coro():
+            await memory.init()
+            dm = DataMesh()
+            bundle = await dm.fetch_all()
+            await dm.close()
+            vector = DiversityEngine.today_vector()
+            avoid = await memory.recent_concepts()
+            now = datetime.now()
+            ctx = AgentContext(
+                bundle=bundle, vector=vector, avoid_concepts=avoid,
+                insights={},
+                date_str=now.strftime("%d %B %Y %A"),
+                time_str=now.strftime("%H:%M"),
+            )
+            sections = {}
+            semaphore = asyncio.Semaphore(config.AGENT_CONCURRENCY)
+
+            async def run_one(defn):
+                async with semaphore:
+                    try:
+                        agent = defn["class"]()
+                        result = await agent.run(ctx)
+                        await agent.close()
+                        return defn["key"], result
+                    except Exception as e:
+                        return defn["key"], f"<b>{defn['label']}</b>\n<i>Hata: {str(e)[:100]}</i>"
+
+            results = await asyncio.gather(*[run_one(d) for d in AGENT_DEFINITIONS])
+            for k, v in results:
+                sections[k] = v
+                ctx.insights[k] = v
+
+            sw = StrategicWeaponAgent()
+            sections["strategy"] = await sw.run(ctx)
+            await sw.close()
+
+            # Kalite değerlendirme
+            ev = QualityEvaluator()
+            quality = await ev.evaluate("\n".join(sections.values()))
+            await ev.close()
+
+            # Tüm bölümleri birleştir
+            output_parts = []
+            now_str = now.strftime("%d %B %Y  %H:%M")
+            avg_q = float(quality.get("average", 7.5))
+            q_label = "ELITE ⚡" if avg_q >= 8.5 else "SHARP" if avg_q >= 7.0 else "DILUTED"
+            output_parts.append(
+                f"<div class='report-header'>"
+                f"<span class='accent'>⚡ NEXA DEEP INTELLIGENCE v6.0</span>  "
+                f"<span class='dim'>{now_str}</span>  "
+                f"<span class='quality-badge'>{avg_q:.1f}/10 · {q_label}</span>"
+                f"<br><span class='dim'>Domain: {' + '.join(vector['domain_focus'])} · "
+                f"Frame: {vector['cognitive_frame']}</span>"
+                f"</div>"
+            )
+
+            section_labels = {
+                "temporal": "⏱️ TEMPORAL ARBİTRAJ",
+                "contra": "🔄 KONTRA-SENTİMENT",
+                "weak_signal": "🔮 ZAYIF SİNYAL",
+                "cognitive": "🧬 BİLİŞSEL KENAR",
+                "systems": "🌀 SİSTEM ÇÖZÜLME",
+                "narrative": "🚀 NARATİF VELOCİTY",
+                "deep_science": "🔬 DERİN BİLİM",
+                "proptech": "🏢 PROPTECH OSINT",
+                "strategy": "🗡️ STRATEJİK SİLAH",
+            }
+            for key, label in section_labels.items():
+                content = sections.get(key, "")
+                if content and len(content) > 30:
+                    output_parts.append(
+                        f"<div class='section-block'>"
+                        f"<div class='section-title'>{label}</div>"
+                        f"<div class='section-body'>{content}</div>"
+                        f"</div>"
+                    )
+            return "".join(output_parts)
+
+    elif cmd == "quick":
+        async def coro():
+            ctx = make_ctx()
+            a = StrategicWeaponAgent()
+            r = await a.run(ctx)
+            await a.close()
+            return r
+
+    elif cmd == "research":
+        if not arg:
+            return jsonify({"error": "Konu gerekli"}), 400
+        async def coro():
+            ctx = make_ctx()
+            a = DeepResearchAgent()
+            r = await a.research(arg, ctx)
+            await a.close()
+            return r
+
+    elif cmd == "proptech":
+        async def coro():
+            dm = DataMesh()
+            bundle = await dm.fetch_all()
+            await dm.close()
+            v = DiversityEngine.today_vector()
+            now = datetime.now()
+            ctx = AgentContext(bundle=bundle, vector=v, avoid_concepts=[], insights={},
+                               date_str=now.strftime("%d %B %Y %A"), time_str=now.strftime("%H:%M"))
+            a = PropTechOSINTAgent()
+            r = await a.run(ctx)
+            await a.close()
+            return r
+
+    elif cmd == "longevity":
+        async def coro():
+            ctx = make_ctx()
+            a = LongevityProtocolAgent()
+            r = await a.run(ctx)
+            await a.close()
+            return r
+
+    elif cmd == "ai":
+        async def coro():
+            dm = DataMesh()
+            bundle = await dm.fetch_all()
+            await dm.close()
+            v = DiversityEngine.today_vector()
+            now = datetime.now()
+            ctx = AgentContext(bundle=bundle, vector=v, avoid_concepts=[], insights={},
+                               date_str=now.strftime("%d %B %Y %A"), time_str=now.strftime("%H:%M"))
+            a = AISecurityAgent()
+            r = await a.run(ctx)
+            await a.close()
+            return r
+
+    elif cmd == "crypto":
+        async def coro():
+            dm = DataMesh()
+            bundle = await dm.fetch_all()
+            await dm.close()
+            v = DiversityEngine.today_vector()
+            now = datetime.now()
+            ctx = AgentContext(bundle=bundle, vector=v, avoid_concepts=[], insights={},
+                               date_str=now.strftime("%d %B %Y %A"), time_str=now.strftime("%H:%M"))
+            a = CryptoAlphaAgent()
+            r = await a.run(ctx)
+            await a.close()
+            return r
+
+    elif cmd == "idea":
+        if not arg:
+            return jsonify({"error": "Fikir gerekli"}), 400
+        async def coro():
+            ctx = make_ctx()
+            a = IdeaValidatorAgent()
+            r = await a.validate(arg, ctx)
+            await a.close()
+            return r
+
+    elif cmd == "osint":
+        target = arg or "Türkiye PropTech rakipleri"
+        async def coro():
+            ctx = make_ctx()
+            a = OSINTProfilerAgent()
+            r = await a.profile(target, ctx)
+            await a.close()
+            return r
+
+    else:
+        return jsonify({"error": f"Bilinmeyen komut: {cmd}"}), 400
+
+    job_id = _start_job(coro)
+    return jsonify({"job_id": job_id})
+
+
+@flask_app.route("/api/stream/<job_id>")
+@login_required
+def api_stream(job_id):
+    q = _jobs.get(job_id)
+    if not q:
+        def err():
+            yield f"data: {json.dumps({'error': 'Job bulunamadı'})}\n\n"
+        return Response(err(), mimetype="text/event-stream")
+
+    def generate():
         try:
-            await start_msg.delete()
-        except Exception:
-            pass
-        await send_messages(update, context, messages)
-    except Exception as e:
-        logger.error(f"Rapor hatası: {e}", exc_info=True)
-        await update.message.reply_text(
-            f"❌ <b>Rapor hatası:</b>\n<code>{str(e)[:300]}</code>",
-            parse_mode=ParseMode.HTML,
-        )
+            while True:
+                try:
+                    item = q.get(timeout=180)
+                except stdlib_queue.Empty:
+                    yield f"data: {json.dumps({'error': 'Timeout'})}\n\n"
+                    break
+                if item is None:
+                    break
+                event_type, payload = item
+                yield f"data: {json.dumps({'type': event_type, 'payload': payload})}\n\n"
+        finally:
+            _jobs.pop(job_id, None)
 
-
-async def cmd_quick(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if not is_authorized(update):
-        return
-    await send_typing(update, context)
-    await update.message.reply_text("⚡ <b>Hızlı Stratejik Özet hazırlanıyor...</b>", parse_mode=ParseMode.HTML)
-    vector = DiversityEngine.today_vector()
-    now = datetime.now()
-    ctx = AgentContext(
-        bundle=DataBundle(), vector=vector, avoid_concepts=[], insights={},
-        date_str=now.strftime("%d %B %Y %A"), time_str=now.strftime("%H:%M"),
-    )
-    try:
-        agent = StrategicWeaponAgent()
-        result = await agent.run(ctx)
-        await agent.close()
-        for part in split_message(clean_agent_output(result)):
-            await send_messages(update, context, [part])
-    except Exception as e:
-        await update.message.reply_text(f"❌ Hata: {str(e)[:200]}", parse_mode=ParseMode.HTML)
-
-
-async def cmd_research(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """
-    /research <konu> — Herhangi konuda derin araştırma
-    """
-    if not is_authorized(update):
-        return
-
-    args = context.args
-    if not args:
-        await update.message.reply_text(
-            "❓ Kullanım: <code>/research &lt;araştırmak istediğin konu&gt;</code>\n"
-            "Örnek: <code>/research agentic AI 2025 trends</code>",
-            parse_mode=ParseMode.HTML,
-        )
-        return
-
-    topic = " ".join(args)
-    await send_typing(update, context)
-    await update.message.reply_text(
-        f"🔍 <b>Deep Research başlatıldı:</b> <code>{topic}</code>\n~1-2 dakika sürebilir...",
-        parse_mode=ParseMode.HTML,
+    return Response(
+        stream_with_context(generate()),
+        mimetype="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+            "Connection": "keep-alive",
+        },
     )
 
-    vector = DiversityEngine.today_vector()
-    now = datetime.now()
-    ctx = AgentContext(
-        bundle=DataBundle(), vector=vector, avoid_concepts=[], insights={},
-        date_str=now.strftime("%d %B %Y %A"), time_str=now.strftime("%H:%M"),
-    )
+
+@flask_app.route("/api/status")
+@login_required
+def api_status():
+    async def _get():
+        await memory.init()
+        s = await memory.summary()
+        v = DiversityEngine.today_vector()
+        return s, dict(v)
+    loop = asyncio.new_event_loop()
     try:
-        agent = DeepResearchAgent()
-        result = await agent.research(topic, ctx)
-        await agent.close()
-        mem = context.bot_data.get("memory")
-        if mem:
-            await mem.log_agent("deep_research", len(result), success=True)
-        for part in split_message(clean_agent_output(result)):
-            await send_messages(update, context, [part])
-    except Exception as e:
-        logger.error(f"Research hatası: {e}", exc_info=True)
-        await update.message.reply_text(f"❌ Hata: {str(e)[:200]}", parse_mode=ParseMode.HTML)
-
-
-async def cmd_proptech(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """
-    /proptech — PropTech + Türkiye piyasa odaklı araştırma
-    """
-    if not is_authorized(update):
-        return
-    await send_typing(update, context)
-    await update.message.reply_text(
-        "🏢 <b>PropTech OSINT analizi başlatıldı...</b>", parse_mode=ParseMode.HTML)
-
-    mem = context.bot_data.get("memory")
-    dm = DataMesh()
-    try:
-        bundle = await dm.fetch_all()
-        vector = DiversityEngine.today_vector()
-        now = datetime.now()
-        ctx = AgentContext(
-            bundle=bundle, vector=vector, avoid_concepts=[], insights={},
-            date_str=now.strftime("%d %B %Y %A"), time_str=now.strftime("%H:%M"),
-        )
-        agent = PropTechOSINTAgent()
-        result = await agent.run(ctx)
-        await agent.close()
-        if mem:
-            await mem.log_agent("proptech_manual", len(result), success=True)
-        for part in split_message(clean_agent_output(result)):
-            await send_messages(update, context, [part])
-    except Exception as e:
-        await update.message.reply_text(f"❌ Hata: {str(e)[:200]}", parse_mode=ParseMode.HTML)
+        s, v = loop.run_until_complete(_get())
     finally:
-        await dm.close()
+        loop.close()
+
+    last = s.get("last_report") or {}
+    return jsonify({
+        "total_reports": s.get("total_reports", 0),
+        "avg_quality": s.get("avg_quality_10d", "?"),
+        "concepts_7d": s.get("concepts_last_7d", 0),
+        "last_date": last.get("date_str", "—"),
+        "last_quality": last.get("quality", "—"),
+        "vector": {
+            "weekday": v.get("weekday"),
+            "cognitive_frame": v.get("cognitive_frame"),
+            "domain_focus": v.get("domain_focus", []),
+            "search_mode": v.get("search_mode"),
+            "day_of_year": v.get("day_of_year"),
+            "days_left": v.get("days_left_year"),
+        },
+        "next_report": f"{config.DAILY_HOUR:02d}:{config.DAILY_MINUTE:02d} TR",
+        "version": "v6.0",
+    })
 
 
-async def cmd_longevity(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """
-    /longevity — Longevity + bilişsel optimizasyon protokolü
-    """
-    if not is_authorized(update):
-        return
-    await send_typing(update, context)
-    await update.message.reply_text(
-        "🧬 <b>Longevity + Bilişsel Optimizasyon araştırması başlatıldı...</b>",
-        parse_mode=ParseMode.HTML,
-    )
-    vector = DiversityEngine.today_vector()
-    now = datetime.now()
-    ctx = AgentContext(
-        bundle=DataBundle(), vector=vector, avoid_concepts=[], insights={},
-        date_str=now.strftime("%d %B %Y %A"), time_str=now.strftime("%H:%M"),
-    )
+# ─── HTML TEMPLATES ──────────────────────────────────────────────────────────
+LOGIN_HTML = """<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NEXA INTELLIGENCE — ACCESS</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --teal:#00d4b4;--teal-dim:rgba(0,212,180,0.12);--teal-glow:rgba(0,212,180,0.3);
+  --orange:#ff6b2b;--orange-dim:rgba(255,107,43,0.15);
+  --bg:#050505;--surface:#0d0d0d;--border:#1c1c1c;
+  --text:#d8d8d8;--dim:#444;--muted:#222;
+}
+html,body{height:100%;background:var(--bg);font-family:'Space Mono',monospace;color:var(--text);overflow:hidden}
+
+/* grid bg */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(0,212,180,0.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,212,180,0.03) 1px,transparent 1px);
+  background-size:40px 40px;
+  pointer-events:none;z-index:0;
+}
+
+/* scanline overlay */
+body::after{
+  content:'';position:fixed;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.15) 2px,rgba(0,0,0,0.15) 4px);
+  pointer-events:none;z-index:1;animation:scan 8s linear infinite;
+}
+@keyframes scan{0%{background-position:0 0}100%{background-position:0 80px}}
+
+.container{
+  position:relative;z-index:2;
+  height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;
+}
+
+/* Spotlight effect */
+.spotlight{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:600px;height:600px;
+  background:radial-gradient(circle,rgba(0,212,180,0.04) 0%,transparent 70%);
+  pointer-events:none;z-index:1;
+}
+
+.logo-block{text-align:center;margin-bottom:48px}
+.logo-main{
+  font-size:11px;font-weight:700;letter-spacing:0.35em;
+  color:var(--teal);text-transform:uppercase;
+  text-shadow:0 0 20px var(--teal-glow);
+  display:block;margin-bottom:8px;
+}
+.logo-ver{font-size:9px;letter-spacing:0.5em;color:var(--dim);text-transform:uppercase}
+.logo-bar{
+  width:120px;height:1px;background:linear-gradient(90deg,transparent,var(--teal),transparent);
+  margin:16px auto;
+}
+
+.classify-badge{
+  display:inline-block;padding:3px 12px;border:1px solid var(--orange);
+  color:var(--orange);font-size:8px;letter-spacing:0.4em;margin-bottom:40px;
+  animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+
+.form-box{
+  background:var(--surface);border:1px solid var(--border);
+  padding:32px 40px;width:320px;
+  box-shadow:0 0 40px rgba(0,0,0,0.8),inset 0 1px 0 rgba(255,255,255,0.03);
+}
+.form-box label{
+  display:block;font-size:9px;letter-spacing:0.3em;color:var(--dim);
+  text-transform:uppercase;margin-bottom:10px;
+}
+.form-box input{
+  width:100%;background:var(--bg);border:1px solid var(--border);
+  color:var(--teal);font-family:'Space Mono',monospace;font-size:13px;
+  padding:10px 14px;outline:none;letter-spacing:0.1em;
+  transition:border-color 0.2s,box-shadow 0.2s;
+}
+.form-box input:focus{border-color:var(--teal);box-shadow:0 0 12px var(--teal-dim)}
+.form-box input::placeholder{color:var(--muted)}
+.btn-access{
+  margin-top:20px;width:100%;background:transparent;border:1px solid var(--teal);
+  color:var(--teal);font-family:'Space Mono',monospace;font-size:10px;
+  letter-spacing:0.3em;padding:12px;cursor:pointer;text-transform:uppercase;
+  transition:all 0.2s;position:relative;overflow:hidden;
+}
+.btn-access::before{
+  content:'';position:absolute;inset:0;
+  background:var(--teal-dim);transform:translateX(-100%);
+  transition:transform 0.3s;
+}
+.btn-access:hover::before{transform:translateX(0)}
+.btn-access:hover{box-shadow:0 0 20px var(--teal-glow)}
+.btn-access:active{transform:scale(0.98)}
+
+.err{
+  margin-top:12px;font-size:9px;letter-spacing:0.2em;
+  color:var(--orange);text-align:center;height:14px;text-transform:uppercase;
+}
+.footer-note{
+  margin-top:40px;font-size:8px;letter-spacing:0.25em;
+  color:var(--muted);text-align:center;text-transform:uppercase;
+}
+</style>
+</head>
+<body>
+<div class="spotlight"></div>
+<div class="container">
+  <div class="logo-block">
+    <span class="logo-main">⚡ NEXA INTELLIGENCE</span>
+    <div class="logo-bar"></div>
+    <span class="logo-ver">v6.0 // Yiğit Narin Exclusive</span>
+  </div>
+  <div class="classify-badge">● CLASSIFIED ACCESS</div>
+  <div class="form-box">
+    <label>Access Code</label>
+    <input type="password" id="pw" placeholder="••••••••" autocomplete="off" autofocus>
+    <button class="btn-access" onclick="doLogin()">AUTHENTICATE →</button>
+    <div class="err" id="err"></div>
+  </div>
+  <div class="footer-note">Nexa HQ · Ankara · 2026 · FOR YİĞİT NARİN ONLY</div>
+</div>
+<script>
+async function doLogin(){
+  const pw=document.getElementById('pw').value;
+  const err=document.getElementById('err');
+  err.textContent='';
+  if(!pw){err.textContent='● CODE REQUIRED';return;}
+  const r=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:pw})});
+  const d=await r.json();
+  if(d.ok){
+    document.body.style.opacity='0';
+    document.body.style.transition='opacity 0.5s';
+    setTimeout(()=>location.reload(),500);
+  }else{
+    err.textContent='● ACCESS DENIED';
+    document.getElementById('pw').value='';
+    document.getElementById('pw').focus();
+  }
+}
+document.getElementById('pw').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
+</script>
+</body>
+</html>"""
+
+
+DASHBOARD_HTML = """<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NEXA INTELLIGENCE v6.0</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:var(--border)}
+:root{
+  --teal:#00d4b4;--teal-dim:rgba(0,212,180,0.1);--teal-mid:rgba(0,212,180,0.2);
+  --teal-glow:rgba(0,212,180,0.25);--teal-bright:rgba(0,212,180,0.5);
+  --orange:#ff6b2b;--orange-dim:rgba(255,107,43,0.12);
+  --red:#ff3b5c;
+  --bg:#050505;--surface:#0c0c0c;--surface2:#111;--border:#1a1a1a;--border2:#242424;
+  --text:#d0d0d0;--text2:#888;--dim:#444;--muted:#1e1e1e;
+  --sidebar:220px;--header:44px;
+}
+html,body{height:100%;background:var(--bg);font-family:'Space Mono',monospace;color:var(--text);overflow:hidden}
+
+/* Scanlines */
+body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.08) 3px,rgba(0,0,0,0.08) 4px);
+}
+
+/* ── HEADER ── */
+.header{
+  position:fixed;top:0;left:0;right:0;height:var(--header);z-index:100;
+  background:rgba(5,5,5,0.95);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px 0 14px;
+}
+.header-left{display:flex;align-items:center;gap:10px}
+.logo-dot{width:6px;height:6px;background:var(--teal);border-radius:50%;box-shadow:0 0 6px var(--teal);animation:blink 2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+.logo-text{font-size:10px;font-weight:700;letter-spacing:0.3em;color:var(--teal);text-transform:uppercase}
+.logo-ver{font-size:8px;letter-spacing:0.2em;color:var(--dim);margin-left:4px}
+.header-right{display:flex;align-items:center;gap:16px}
+.hdr-clock{font-size:9px;letter-spacing:0.15em;color:var(--dim)}
+.hdr-badge{
+  font-size:8px;letter-spacing:0.3em;padding:2px 8px;
+  border:1px solid var(--border2);color:var(--dim);text-transform:uppercase;
+}
+.btn-logout{
+  background:none;border:1px solid var(--border2);color:var(--dim);
+  font-family:'Space Mono',monospace;font-size:8px;letter-spacing:0.2em;
+  padding:4px 10px;cursor:pointer;text-transform:uppercase;transition:all 0.15s;
+}
+.btn-logout:hover{border-color:var(--orange);color:var(--orange)}
+
+/* ── LAYOUT ── */
+.layout{
+  position:fixed;top:var(--header);left:0;right:0;bottom:0;
+  display:flex;
+}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  width:var(--sidebar);flex-shrink:0;
+  background:var(--surface);border-right:1px solid var(--border);
+  overflow-y:auto;display:flex;flex-direction:column;
+}
+.sb-section{padding:14px 0 6px}
+.sb-label{
+  font-size:7px;letter-spacing:0.35em;color:var(--dim);
+  text-transform:uppercase;padding:0 14px 8px;
+  border-bottom:1px solid var(--muted);margin-bottom:4px;
+}
+.cmd-btn{
+  display:flex;align-items:center;gap:8px;
+  width:100%;background:none;border:none;color:var(--text2);
+  font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.1em;
+  padding:8px 14px;cursor:pointer;text-align:left;
+  transition:all 0.12s;border-left:2px solid transparent;
+}
+.cmd-btn:hover{background:var(--teal-dim);color:var(--teal);border-left-color:var(--teal)}
+.cmd-btn.active{background:var(--teal-dim);color:var(--teal);border-left-color:var(--teal)}
+.cmd-btn.running{color:var(--orange);border-left-color:var(--orange);animation:pulse2 0.8s ease-in-out infinite}
+@keyframes pulse2{0%,100%{opacity:1}50%{opacity:0.5}}
+.cmd-icon{font-size:12px;flex-shrink:0}
+
+.sb-divider{height:1px;background:var(--border);margin:6px 14px}
+
+/* Input area in sidebar */
+.sb-input-wrap{padding:10px 12px}
+.sb-input{
+  width:100%;background:var(--bg);border:1px solid var(--border);
+  color:var(--teal);font-family:'Space Mono',monospace;font-size:9px;
+  padding:7px 10px;outline:none;resize:none;height:52px;
+  transition:border-color 0.15s;
+}
+.sb-input:focus{border-color:var(--teal)}
+.sb-input::placeholder{color:var(--muted)}
+
+/* ── MAIN CONTENT ── */
+.main{
+  flex:1;display:flex;flex-direction:column;overflow:hidden;
+  background:var(--bg);
+}
+
+/* Status bar below header inside main */
+.status-bar{
+  flex-shrink:0;
+  border-bottom:1px solid var(--border);
+  padding:6px 16px;display:flex;align-items:center;gap:16px;
+  background:var(--surface);font-size:8px;letter-spacing:0.15em;
+  color:var(--dim);overflow:hidden;
+}
+.stat-item{display:flex;align-items:center;gap:6px}
+.stat-dot{width:4px;height:4px;border-radius:50%;background:var(--teal)}
+.stat-dot.orange{background:var(--orange)}
+.stat-val{color:var(--text2)}
+.stat-sep{color:var(--muted);margin:0 2px}
+
+/* Terminal / Output area */
+.terminal{
+  flex:1;overflow-y:auto;padding:16px 20px;
+  font-size:11px;line-height:1.7;
+  background:var(--bg);
+}
+
+/* Welcome state */
+.welcome{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  height:100%;text-align:center;gap:12px;
+}
+.welcome-logo{
+  font-size:10px;letter-spacing:0.35em;color:var(--teal);
+  text-transform:uppercase;text-shadow:0 0 30px var(--teal-glow);
+}
+.welcome-sub{font-size:8px;letter-spacing:0.2em;color:var(--dim)}
+.welcome-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
+  margin-top:24px;border:1px solid var(--border);
+}
+.wg-item{
+  padding:12px 16px;background:var(--surface);font-size:8px;
+  letter-spacing:0.15em;color:var(--dim);text-align:center;
+}
+.wg-item span{display:block;font-size:11px;color:var(--teal);margin-bottom:4px}
+
+/* Output rendering */
+.out-wrap{animation:fadeIn 0.3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+.report-header{
+  background:var(--surface);border:1px solid var(--border2);
+  padding:12px 14px;margin-bottom:16px;font-size:9px;letter-spacing:0.12em;
+  line-height:1.8;
+}
+.accent{color:var(--teal);font-weight:700}
+.dim{color:var(--dim)}
+.quality-badge{
+  background:var(--teal-dim);color:var(--teal);
+  padding:2px 8px;border:1px solid var(--teal-mid);font-size:8px;
+}
+
+.section-block{
+  margin-bottom:20px;border-left:2px solid var(--border2);
+  padding-left:14px;
+}
+.section-block:last-child{border-left-color:var(--teal)}
+.section-title{
+  font-size:9px;font-weight:700;letter-spacing:0.25em;color:var(--teal);
+  text-transform:uppercase;margin-bottom:10px;
+  padding-bottom:6px;border-bottom:1px solid var(--border);
+}
+.section-body{font-size:10px;line-height:1.8;color:var(--text)}
+.section-body b{color:var(--text);font-weight:700}
+.section-body i{color:var(--text2)}
+.section-body code{
+  background:var(--muted);color:var(--teal);padding:1px 5px;
+  font-family:'Space Mono',monospace;font-size:9px;
+}
+.section-body blockquote{
+  border-left:2px solid var(--orange);padding-left:12px;
+  color:var(--text2);font-style:italic;margin:8px 0;
+}
+
+/* Progress / streaming indicator */
+.stream-line{display:flex;align-items:center;gap:8px;margin-bottom:4px;color:var(--dim);font-size:9px}
+.stream-line::before{content:'▶';color:var(--teal);font-size:7px}
+
+/* Cursor blink at end of streaming */
+.cursor{
+  display:inline-block;width:7px;height:12px;background:var(--teal);
+  animation:cursorBlink 1s step-end infinite;vertical-align:middle;margin-left:2px;
+}
+@keyframes cursorBlink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* Error display */
+.error-box{
+  border:1px solid var(--red);background:rgba(255,59,92,0.06);
+  padding:12px 14px;color:var(--red);font-size:9px;letter-spacing:0.1em;
+}
+
+/* Done banner */
+.done-banner{
+  margin-top:16px;padding:8px 14px;
+  border:1px solid var(--teal-mid);background:var(--teal-dim);
+  font-size:9px;letter-spacing:0.2em;color:var(--teal);text-align:center;
+}
+
+/* Bottom input bar */
+.input-bar{
+  flex-shrink:0;border-top:1px solid var(--border);
+  padding:8px 14px;display:flex;gap:8px;align-items:center;
+  background:var(--surface);
+}
+.input-bar input{
+  flex:1;background:var(--bg);border:1px solid var(--border);
+  color:var(--teal);font-family:'Space Mono',monospace;font-size:10px;
+  padding:7px 12px;outline:none;
+  transition:border-color 0.15s;
+}
+.input-bar input:focus{border-color:var(--teal)}
+.input-bar input::placeholder{color:var(--muted);font-size:9px}
+.input-send{
+  background:var(--teal-dim);border:1px solid var(--teal-mid);
+  color:var(--teal);font-family:'Space Mono',monospace;font-size:9px;
+  letter-spacing:0.2em;padding:7px 14px;cursor:pointer;
+  text-transform:uppercase;transition:all 0.15s;white-space:nowrap;
+}
+.input-send:hover{background:var(--teal-mid);box-shadow:0 0 12px var(--teal-dim)}
+.input-send:disabled{opacity:0.3;cursor:not-allowed}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <div class="logo-dot"></div>
+    <span class="logo-text">NEXA INTELLIGENCE</span>
+    <span class="logo-ver">// v6.0</span>
+  </div>
+  <div class="header-right">
+    <span class="hdr-clock" id="clock">--:--:--</span>
+    <span class="hdr-badge">FOR YİĞİT NARİN ONLY</span>
+    <button class="btn-logout" onclick="logout()">LOGOUT ×</button>
+  </div>
+</div>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sb-section">
+      <div class="sb-label">Günlük Rapor</div>
+      <button class="cmd-btn" id="btn-report" onclick="run('report')">
+        <span class="cmd-icon">⚡</span> Tam Rapor (9 Ajan)
+      </button>
+      <button class="cmd-btn" id="btn-quick" onclick="run('quick')">
+        <span class="cmd-icon">🗡️</span> Stratejik Silah
+      </button>
+    </div>
+
+    <div class="sb-divider"></div>
+
+    <div class="sb-section">
+      <div class="sb-label">Deep Research</div>
+      <div class="sb-input-wrap">
+        <textarea class="sb-input" id="research-input" placeholder="Araştırma konusu...&#10;(boş bırakırsan genel)"></textarea>
+      </div>
+      <button class="cmd-btn" id="btn-research" onclick="run('research')">
+        <span class="cmd-icon">🔍</span> Deep Research
+      </button>
+      <button class="cmd-btn" id="btn-proptech" onclick="run('proptech')">
+        <span class="cmd-icon">🏢</span> PropTech OSINT
+      </button>
+      <button class="cmd-btn" id="btn-longevity" onclick="run('longevity')">
+        <span class="cmd-icon">🧬</span> Longevity Protocol
+      </button>
+      <button class="cmd-btn" id="btn-ai" onclick="run('ai')">
+        <span class="cmd-icon">🤖</span> AI Security
+      </button>
+      <button class="cmd-btn" id="btn-crypto" onclick="run('crypto')">
+        <span class="cmd-icon">₿</span> Crypto Alpha
+      </button>
+    </div>
+
+    <div class="sb-divider"></div>
+
+    <div class="sb-section">
+      <div class="sb-label">Analiz</div>
+      <div class="sb-input-wrap">
+        <textarea class="sb-input" id="idea-input" placeholder="Fikrin / OSINT hedefi..."></textarea>
+      </div>
+      <button class="cmd-btn" id="btn-idea" onclick="run('idea')">
+        <span class="cmd-icon">💡</span> Fikir Validasyonu
+      </button>
+      <button class="cmd-btn" id="btn-osint" onclick="run('osint')">
+        <span class="cmd-icon">🕵️</span> OSINT Profil
+      </button>
+    </div>
+
+    <div class="sb-divider"></div>
+
+    <div class="sb-section">
+      <div class="sb-label">Sistem</div>
+      <button class="cmd-btn" id="btn-status" onclick="loadStatus()">
+        <span class="cmd-icon">📊</span> Sistem Durumu
+      </button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <!-- Status bar -->
+    <div class="status-bar" id="status-bar">
+      <div class="stat-item"><div class="stat-dot"></div><span class="stat-val" id="sb-reports">—</span> rapor</div>
+      <span class="stat-sep">·</span>
+      <div class="stat-item"><div class="stat-dot orange"></div>Kalite <span class="stat-val" id="sb-quality">—</span></div>
+      <span class="stat-sep">·</span>
+      <div class="stat-item">Son: <span class="stat-val" id="sb-last">—</span></div>
+      <span class="stat-sep">·</span>
+      <div class="stat-item">Vektör: <span class="stat-val" id="sb-vector">—</span></div>
+      <span class="stat-sep">·</span>
+      <div class="stat-item">Otomatik: <span class="stat-val" id="sb-auto">10:00 TR</span></div>
+    </div>
+
+    <!-- Terminal output -->
+    <div class="terminal" id="terminal">
+      <div class="welcome" id="welcome">
+        <div class="welcome-logo">⚡ NEXA DEEP INTELLIGENCE</div>
+        <div class="welcome-sub">v6.0 · 9 Ajan · Google Grounding · SQLite Hafıza</div>
+        <div class="welcome-grid">
+          <div class="wg-item"><span>9+6</span>Ajan Ordusu</div>
+          <div class="wg-item"><span id="wg-reports">—</span>Rapor</div>
+          <div class="wg-item"><span id="wg-quality">—</span>Kalite</div>
+          <div class="wg-item"><span id="wg-vector">—</span>Bugün</div>
+          <div class="wg-item"><span>10:00</span>Otomatik</div>
+          <div class="wg-item"><span>14</span>Çerçeve</div>
+        </div>
+        <div style="margin-top:20px;font-size:8px;letter-spacing:0.2em;color:var(--dim)">
+          Sol panelden komut seç veya altta text gir →
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom input bar -->
+    <div class="input-bar">
+      <input type="text" id="cmd-input" placeholder="Serbest komut gir — /research konu  /idea fikir  /osint hedef  /crypto  /ai  /longevity ...">
+      <button class="input-send" id="send-btn" onclick="parseAndRun()">ÇALIŞTIR →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Clock ──
+function updateClock(){
+  const now=new Date();
+  document.getElementById('clock').textContent=now.toLocaleTimeString('tr-TR');
+}
+updateClock();setInterval(updateClock,1000);
+
+// ── State ──
+let currentCmd=null;
+let currentES=null;
+let isRunning=false;
+let outputBuffer='';
+
+// ── Status ──
+async function loadStatus(){
+  try{
+    const r=await fetch('/api/status');
+    const d=await r.json();
+    document.getElementById('sb-reports').textContent=d.total_reports;
+    document.getElementById('sb-quality').textContent=d.avg_quality+'/10';
+    document.getElementById('sb-last').textContent=d.last_date||'—';
+    const v=d.vector||{};
+    document.getElementById('sb-vector').textContent=(v.weekday||'')+'·'+(v.cognitive_frame||'');
+    document.getElementById('sb-auto').textContent=d.next_report;
+    // welcome grid
+    document.getElementById('wg-reports').textContent=d.total_reports;
+    document.getElementById('wg-quality').textContent=d.avg_quality+'/10';
+    document.getElementById('wg-vector').textContent=v.weekday||'—';
+  }catch(e){}
+}
+loadStatus();setInterval(loadStatus,30000);
+
+// ── Logout ──
+async function logout(){
+  await fetch('/api/logout',{method:'POST'});
+  location.reload();
+}
+
+// ── Run command ──
+function run(cmd,arg){
+  if(isRunning)return;
+  // get arg from sidebar inputs
+  if(!arg){
+    if(cmd==='research') arg=document.getElementById('research-input').value.trim();
+    if(cmd==='idea')     arg=document.getElementById('idea-input').value.trim();
+    if(cmd==='osint')    arg=document.getElementById('idea-input').value.trim();
+  }
+  _execute(cmd,arg);
+}
+
+function parseAndRun(){
+  const raw=document.getElementById('cmd-input').value.trim();
+  if(!raw)return;
+  const parts=raw.split(/[ \t]+/);
+  let cmd=parts[0].replace('/','').toLowerCase();
+  const arg=parts.slice(1).join(' ');
+  const valid=['report','quick','research','proptech','longevity','ai','crypto','idea','osint'];
+  if(!valid.includes(cmd)){
+    showError('Bilinmeyen komut: '+cmd+' — Geçerli: '+valid.join(', '));
+    return;
+  }
+  document.getElementById('cmd-input').value='';
+  _execute(cmd,arg);
+}
+
+async function _execute(cmd,arg){
+  if(isRunning)return;
+  isRunning=true;
+  currentCmd=cmd;
+  outputBuffer='';
+
+  // Reset UI
+  setAllBtnsNormal();
+  const btn=document.getElementById('btn-'+cmd);
+  if(btn)btn.classList.add('running');
+  document.getElementById('send-btn').disabled=true;
+
+  // Clear terminal
+  const term=document.getElementById('terminal');
+  term.innerHTML='<div class="stream-line">Initializing '+cmd.toUpperCase()+' agent...</div>';
+  if(cmd==='report') term.innerHTML+='<div class="stream-line">Veri toplama + 9 ajan paralel çalışacak (~3-5 dk)</div>';
+
+  // Start job
+  let jobId;
+  try{
+    const r=await fetch('/api/run',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({cmd,arg})
+    });
+    const d=await r.json();
+    if(d.error){showError(d.error);done(cmd);return;}
+    jobId=d.job_id;
+  }catch(e){showError('API hatası: '+e.message);done(cmd);return;}
+
+  // Add cursor
+  term.innerHTML+='<div id="out-content"></div><span class="cursor" id="cursor"></span>';
+  const outEl=document.getElementById('out-content');
+
+  // Stream
+  const es=new EventSource('/api/stream/'+jobId);
+  currentES=es;
+
+  es.onmessage=function(e){
+    const data=JSON.parse(e.data);
+    if(data.error){showError(data.error);es.close();done(cmd);return;}
+    if(data.type==='chunk'){
+      outputBuffer+=data.payload;
+      outEl.innerHTML=formatOutput(outputBuffer);
+      term.scrollTop=term.scrollHeight;
+    }
+    if(data.type==='done'){
+      outEl.innerHTML=formatOutput(data.payload);
+      document.getElementById('cursor')?.remove();
+      term.innerHTML+=`<div class="done-banner">✓ ${cmd.toUpperCase()} TAMAMLANDI · ${new Date().toLocaleTimeString('tr-TR')}</div>`;
+      term.scrollTop=term.scrollHeight;
+      es.close();done(cmd);
+    }
+  };
+  es.onerror=function(){
+    if(isRunning){showError('Bağlantı kesildi');es.close();done(cmd);}
+  };
+}
+
+function formatOutput(html){
+  // The HTML from agents already has formatting
+  // Just ensure it's wrapped properly
+  if(html.includes('class=\'report-header\'')||html.includes('class="report-header"')){
+    return html; // already formatted for report
+  }
+  // Wrap in section-body for agent outputs
+  return '<div class="section-body">'+html+'</div>';
+}
+
+function showError(msg){
+  const term=document.getElementById('terminal');
+  term.innerHTML+='<div class="error-box">● ERROR: '+msg+'</div>';
+  term.scrollTop=term.scrollHeight;
+}
+
+function done(cmd){
+  isRunning=false;
+  setAllBtnsNormal();
+  document.getElementById('send-btn').disabled=false;
+  loadStatus();
+}
+
+function setAllBtnsNormal(){
+  document.querySelectorAll('.cmd-btn').forEach(b=>{
+    b.classList.remove('running','active');
+  });
+}
+
+// ── Enter key ──
+document.getElementById('cmd-input').addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();parseAndRun();}
+});
+
+// ── Sidebar research input enter ──
+document.getElementById('research-input').addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();run('research');}
+});
+document.getElementById('idea-input').addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();run('idea');}
+});
+</script>
+</body>
+</html>"""
+
+
+def _render_login():
+    from flask import make_response
+    return make_response(LOGIN_HTML, 200, {"Content-Type": "text/html; charset=utf-8"})
+
+
+def _render_dashboard():
+    from flask import make_response
+    return make_response(DASHBOARD_HTML, 200, {"Content-Type": "text/html; charset=utf-8"})
+
+
+# ─── SCHEDULED REPORT (web modunda DB'ye kaydeder) ──────────────────────────
+async def _scheduled_web_report():
+    log = logging.getLogger("scheduler")
+    log.info(f"⏰ Zamanlanmış web raporu: {datetime.now().strftime('%H:%M')}")
     try:
-        agent = LongevityProtocolAgent()
-        result = await agent.run(ctx)
-        await agent.close()
-        mem = context.bot_data.get("memory")
-        if mem:
-            await mem.log_agent("longevity_manual", len(result), success=True)
-        for part in split_message(clean_agent_output(result)):
-            await send_messages(update, context, [part])
+        await memory.init()
+        engine = IntelligenceEngine(memory)
+        result = await engine.run(triggered_by="schedule")
+        await engine.close()
+        log.info(f"✅ Zamanlanmış rapor DB'ye kaydedildi. Kalite: {result['quality'].get('average','?')}")
     except Exception as e:
-        await update.message.reply_text(f"❌ Hata: {str(e)[:200]}", parse_mode=ParseMode.HTML)
-
-
-async def cmd_ai(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """
-    /ai — AI sistemleri + güvenlik araştırması
-    """
-    if not is_authorized(update):
-        return
-    await send_typing(update, context)
-    await update.message.reply_text(
-        "🤖 <b>AI Sistemleri + Güvenlik araştırması başlatıldı...</b>",
-        parse_mode=ParseMode.HTML,
-    )
-    dm = DataMesh()
-    try:
-        bundle = await dm.fetch_all()
-        vector = DiversityEngine.today_vector()
-        now = datetime.now()
-        ctx = AgentContext(
-            bundle=bundle, vector=vector, avoid_concepts=[], insights={},
-            date_str=now.strftime("%d %B %Y %A"), time_str=now.strftime("%H:%M"),
-        )
-        agent = AISecurityAgent()
-        result = await agent.run(ctx)
-        await agent.close()
-        mem = context.bot_data.get("memory")
-        if mem:
-            await mem.log_agent("ai_manual", len(result), success=True)
-        for part in split_message(clean_agent_output(result)):
-            await send_messages(update, context, [part])
-    except Exception as e:
-        await update.message.reply_text(f"❌ Hata: {str(e)[:200]}", parse_mode=ParseMode.HTML)
-    finally:
-        await dm.close()
-
-
-async def cmd_crypto(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """
-    /crypto — Kripto/DeFi alpha analizi
-    """
-    if not is_authorized(update):
-        return
-    await send_typing(update, context)
-    await update.message.reply_text(
-        "₿ <b>Kripto/DeFi Alpha analizi başlatıldı...</b>", parse_mode=ParseMode.HTML)
-
-    dm = DataMesh()
-    try:
-        bundle = await dm.fetch_all()
-        vector = DiversityEngine.today_vector()
-        now = datetime.now()
-        ctx = AgentContext(
-            bundle=bundle, vector=vector, avoid_concepts=[], insights={},
-            date_str=now.strftime("%d %B %Y %A"), time_str=now.strftime("%H:%M"),
-        )
-        agent = CryptoAlphaAgent()
-        result = await agent.run(ctx)
-        await agent.close()
-        mem = context.bot_data.get("memory")
-        if mem:
-            await mem.log_agent("crypto_manual", len(result), success=True)
-        for part in split_message(clean_agent_output(result)):
-            await send_messages(update, context, [part])
-    except Exception as e:
-        await update.message.reply_text(f"❌ Hata: {str(e)[:200]}", parse_mode=ParseMode.HTML)
-    finally:
-        await dm.close()
-
-
-async def cmd_idea(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """
-    /idea <fikir> — İş fikri validasyonu
-    """
-    if not is_authorized(update):
-        return
-
-    args = context.args
-    if not args:
-        await update.message.reply_text(
-            "❓ Kullanım: <code>/idea &lt;iş fikrin&gt;</code>\n"
-            "Örnek: <code>/idea WhatsApp'tan otomatik lead yakalayan AI CRM</code>",
-            parse_mode=ParseMode.HTML,
-        )
-        return
-
-    idea = " ".join(args)
-    await send_typing(update, context)
-    await update.message.reply_text(
-        f"💡 <b>Fikir validasyonu başlatıldı:</b>\n<i>{idea}</i>\n\n~1-2 dakika...",
-        parse_mode=ParseMode.HTML,
-    )
-
-    vector = DiversityEngine.today_vector()
-    now = datetime.now()
-    ctx = AgentContext(
-        bundle=DataBundle(), vector=vector, avoid_concepts=[], insights={},
-        date_str=now.strftime("%d %B %Y %A"), time_str=now.strftime("%H:%M"),
-    )
-    try:
-        agent = IdeaValidatorAgent()
-        result = await agent.validate(idea, ctx)
-        await agent.close()
-        mem = context.bot_data.get("memory")
-        if mem:
-            await mem.log_agent("idea_validator", len(result), success=True)
-        for part in split_message(clean_agent_output(result)):
-            await send_messages(update, context, [part])
-    except Exception as e:
-        logger.error(f"Idea validation hatası: {e}", exc_info=True)
-        await update.message.reply_text(f"❌ Hata: {str(e)[:200]}", parse_mode=ParseMode.HTML)
-
-
-async def cmd_osint(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """
-    /osint <hedef> — OSINT + rakip profil analizi
-    """
-    if not is_authorized(update):
-        return
-
-    args = context.args
-    target = " ".join(args) if args else "Türkiye PropTech rakipleri ve liderler"
-
-    await send_typing(update, context)
-    await update.message.reply_text(
-        f"🕵️ <b>OSINT analizi başlatıldı:</b>\n<code>{target}</code>\n\n~1-2 dakika...",
-        parse_mode=ParseMode.HTML,
-    )
-
-    vector = DiversityEngine.today_vector()
-    now = datetime.now()
-    ctx = AgentContext(
-        bundle=DataBundle(), vector=vector, avoid_concepts=[], insights={},
-        date_str=now.strftime("%d %B %Y %A"), time_str=now.strftime("%H:%M"),
-    )
-    try:
-        agent = OSINTProfilerAgent()
-        result = await agent.profile(target, ctx)
-        await agent.close()
-        mem = context.bot_data.get("memory")
-        if mem:
-            await mem.log_agent("osint_manual", len(result), success=True)
-        for part in split_message(clean_agent_output(result)):
-            await send_messages(update, context, [part])
-    except Exception as e:
-        logger.error(f"OSINT hatası: {e}", exc_info=True)
-        await update.message.reply_text(f"❌ Hata: {str(e)[:200]}", parse_mode=ParseMode.HTML)
-
-
-async def cmd_status(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if not is_authorized(update):
-        return
-    mem: MemoryEngine = context.bot_data.get("memory")
-    summary = await mem.summary()
-    vector = DiversityEngine.today_vector()
-    await send_messages(update, context, [build_status_message(summary, dict(vector))])
-
-
-async def cmd_memory(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if not is_authorized(update):
-        return
-    mem: MemoryEngine = context.bot_data.get("memory")
-    concepts = await mem.recent_concepts(config.DIVERSITY_WINDOW_DAYS)
-    domain_focuses = await mem.recent_domain_focuses(7)
-    concept_str = ", ".join(concepts[:30]) if concepts else "Henüz kavram yok"
-    focus_str = ", ".join(set(domain_focuses[:10])) if domain_focuses else "Henüz yok"
-    msg = f"""<b>🧠 HAFIZA ÖZETİ</b>
-
-<b>Son {config.DIVERSITY_WINDOW_DAYS} Günde Kapsanan Kavramlar:</b>
-<i>{concept_str}</i>
-
-<b>Son 7 Günde Aktif Domainler:</b>
-<code>{focus_str}</code>
-
-<i>Bu kavramlar tekrar edilmeyecek. Sistem çeşitlilik için bunlardan kaçınır.</i>"""
-    await send_messages(update, context, [msg])
-
-
-async def cmd_vector(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if not is_authorized(update):
-        return
-    vector = DiversityEngine.today_vector()
-    msg = f"<b>🔭 BUGÜNÜN KEŞİF VEKTÖRü</b>\n\n{DiversityEngine.format_vector_info(vector)}"
-    await send_messages(update, context, [msg])
-
-
-async def unknown_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if not is_authorized(update):
-        return
-    await update.message.reply_text(
-        "❓ Bilinmeyen komut. /help ile komutları görün.",
-        parse_mode=ParseMode.HTML,
-    )
-
-
-# ─── BOT SINIFI ──────────────────────────────────────────────────────────────
-class NexaBot:
-    def __init__(self, mem: MemoryEngine):
-        self.memory = mem
-        self.app: Application | None = None
-
-    def build(self) -> Application:
-        self.app = Application.builder().token(config.TELEGRAM_BOT_TOKEN).build()
-        self.app.bot_data["memory"] = self.memory
-
-        # Tüm komutları kaydet
-        handlers = [
-            ("start",    cmd_start),
-            ("help",     cmd_help),
-            ("report",   cmd_report),
-            ("quick",    cmd_quick),
-            ("research", cmd_research),
-            ("proptech", cmd_proptech),
-            ("longevity",cmd_longevity),
-            ("ai",       cmd_ai),
-            ("crypto",   cmd_crypto),
-            ("idea",     cmd_idea),
-            ("osint",    cmd_osint),
-            ("status",   cmd_status),
-            ("memory",   cmd_memory),
-            ("vector",   cmd_vector),
-        ]
-        for cmd, handler in handlers:
-            self.app.add_handler(CommandHandler(cmd, handler))
-        self.app.add_handler(MessageHandler(filters.COMMAND, unknown_command))
-
-        logger.info("Nexa Bot oluşturuldu — 14 komut hazır.")
-        return self.app
-
-    async def send_scheduled_report(self, result: dict, avg_quality_10d: str = "?"):
-        if not config.TELEGRAM_CHAT_ID:
-            logger.warning("TELEGRAM_CHAT_ID ayarlanmamış.")
-            return
-        messages = build_telegram_messages(result, avg_quality_10d=avg_quality_10d)
-        for i, msg in enumerate(messages):
-            if not msg.strip():
-                continue
-            try:
-                await self.app.bot.send_message(
-                    chat_id=config.TELEGRAM_CHAT_ID, text=msg,
-                    parse_mode=ParseMode.HTML, disable_web_page_preview=True,
-                )
-                if i < len(messages) - 1:
-                    await asyncio.sleep(0.5)
-            except Exception as e:
-                logger.error(f"Zamanlı rapor mesaj {i+1} hatası: {e}")
-        logger.info(f"Zamanlı rapor gönderildi: {len(messages)} mesaj")
+        log.error(f"❌ Zamanlanmış rapor hatası: {e}", exc_info=True)
 
 
 # ═════════════════════════════════════════════════════════════════════════════
-# ⑫ ANA DÖNGÜ
+# ⑫ ENTRY POINT
 # ═════════════════════════════════════════════════════════════════════════════
 def setup_logging():
-    fmt = "%(asctime)s | %(levelname)-8s | %(name)-30s | %(message)s"
-    handlers = [
-        logging.StreamHandler(sys.stdout),
-        logging.FileHandler(config.LOG_FILE, encoding="utf-8"),
-    ]
-    logging.basicConfig(
-        level=getattr(logging, config.LOG_LEVEL.upper(), logging.INFO),
-        format=fmt, datefmt="%Y-%m-%d %H:%M:%S", handlers=handlers,
-    )
-    for quiet in ["httpx", "httpcore", "telegram", "apscheduler"]:
+    fmt = "%(asctime)s | %(levelname)-8s | %(name)s | %(message)s"
+    handlers = [logging.StreamHandler(sys.stdout)]
+    try:
+        handlers.append(logging.FileHandler(config.LOG_FILE, encoding="utf-8"))
+    except Exception:
+        pass
+    logging.basicConfig(level=getattr(logging, config.LOG_LEVEL.upper(), logging.INFO),
+                        format=fmt, datefmt="%Y-%m-%d %H:%M:%S", handlers=handlers)
+    for quiet in ["httpx", "httpcore", "apscheduler", "werkzeug"]:
         logging.getLogger(quiet).setLevel(logging.WARNING)
     return logging.getLogger(__name__)
 
 
-def validate_config() -> list[str]:
-    errors = []
-    if not config.GEMINI_API_KEY:
-        errors.append("GEMINI_API_KEY ayarlanmamış!")
-    if not config.TELEGRAM_BOT_TOKEN:
-        errors.append("TELEGRAM_BOT_TOKEN ayarlanmamış!")
-    if not config.TELEGRAM_CHAT_ID:
-        print("⚠️  UYARI: TELEGRAM_CHAT_ID ayarlanmamış.")
-    return errors
+def start_scheduler():
+    """APScheduler'ı ayrı thread'de başlat."""
+    import asyncio as _aio
 
-
-async def scheduled_report_job(bot: NexaBot, mem: MemoryEngine):
-    logger_sched = logging.getLogger("scheduler")
-    logger_sched.info(f"⏰ Zamanlanmış rapor: {datetime.now().strftime('%H:%M')}")
-    engine = IntelligenceEngine(mem)
-    try:
-        result = await engine.run(triggered_by="schedule")
-        avg_q = await mem.avg_quality(10)
-        await bot.send_scheduled_report(result, avg_quality_10d=avg_q)
-        logger_sched.info("✅ Zamanlanmış rapor gönderildi.")
-    except Exception as e:
-        logger_sched.error(f"❌ Zamanlanmış rapor hatası: {e}", exc_info=True)
-        if config.TELEGRAM_CHAT_ID and bot.app:
-            try:
-                await bot.app.bot.send_message(
-                    chat_id=config.TELEGRAM_CHAT_ID,
-                    text=f"❌ <b>Zamanlanmış Rapor Hatası</b>\n<code>{str(e)[:300]}</code>",
-                    parse_mode="HTML",
-                )
-            except Exception:
-                pass
-    finally:
-        await engine.close()
-
-
-async def main():
-    log = setup_logging()
-    log.info("=" * 60)
-    log.info("  NEXA DEEP INTELLIGENCE v6.0 BAŞLATIYOR")
-    log.info(f"  {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    log.info(f"  9 Ajan · 6 Research Ajanı · Sabah {config.DAILY_HOUR:02d}:{config.DAILY_MINUTE:02d}")
-    log.info("=" * 60)
-
-    errors = validate_config()
-    if errors:
-        for err in errors:
-            log.critical(f"KONFİGÜRASYON HATASI: {err}")
-        sys.exit(1)
-
-    await memory.init()
-    log.info("✅ Hafıza motoru başlatıldı.")
-
-    bot = NexaBot(memory)
-    app = bot.build()
+    async def _run():
+        await memory.init()
+        await _scheduled_web_report()  # ilk çalıştırmayı buraya almak için gerek yok
+        # Sadece scheduler loop'u çalıştır
 
     scheduler = AsyncIOScheduler(timezone="Europe/Istanbul")
     scheduler.add_job(
-        scheduled_report_job,
-        CronTrigger(hour=config.DAILY_HOUR, minute=config.DAILY_MINUTE, timezone="Europe/Istanbul"),
+        lambda: threading.Thread(
+            target=lambda: asyncio.run(_scheduled_web_report()), daemon=True
+        ).start(),
+        "cron",
+        hour=config.DAILY_HOUR,
+        minute=config.DAILY_MINUTE,
         id="daily_report",
-        name=f"Günlük Rapor ({config.DAILY_HOUR:02d}:{config.DAILY_MINUTE:02d})",
-        args=[bot, memory],
         max_instances=1,
         misfire_grace_time=300,
     )
     scheduler.start()
-    log.info(f"✅ Zamanlayıcı: her gün {config.DAILY_HOUR:02d}:{config.DAILY_MINUTE:02d} Türkiye saati")
-
-    job = scheduler.get_job("daily_report")
-    if job and job.next_run_time:
-        log.info(f"📅 Sonraki çalışma: {job.next_run_time.strftime('%Y-%m-%d %H:%M %Z')}")
-
-    log.info("🤖 Telegram bot başlatılıyor...")
-    log.info("Komutlar: /report /research /proptech /longevity /ai /crypto /idea /osint")
-
-    # ── WEBHOOK vs POLLING otomatik seçimi ──────────────────────────────────
-    # Render ve cloud platformlar PORT env variable set eder.
-    # Local geliştirmede PORT yoktur → polling.
-    PORT = int(os.getenv("PORT", 0))
-    WEBHOOK_URL = os.getenv("WEBHOOK_URL", "") or os.getenv("RENDER_EXTERNAL_URL", "")
-    USE_WEBHOOK = bool(PORT and WEBHOOK_URL)
-
-    async with app:
-        await app.initialize()
-        await app.start()
-
-        if USE_WEBHOOK:
-            # ── WEBHOOK MODU (Render / Production) ──────────────────────────
-            webhook_path = f"/{config.TELEGRAM_BOT_TOKEN}"
-            full_webhook_url = f"{WEBHOOK_URL.rstrip('/')}{webhook_path}"
-
-            await app.bot.set_webhook(
-                url=full_webhook_url,
-                allowed_updates=["message", "callback_query"],
-                drop_pending_updates=True,
-            )
-            log.info(f"WEBHOOK MODU — Port: {PORT} | URL: {full_webhook_url[:60]}...")
-
-            await app.updater.start_webhook(
-                listen="0.0.0.0",
-                port=PORT,
-                url_path=config.TELEGRAM_BOT_TOKEN,
-                webhook_url=full_webhook_url,
-                drop_pending_updates=True,
-            )
-            log.info("Bot webhook aktif. Tek instance garantili.")
-        else:
-            # ── POLLING MODU (Local geliştirme) ─────────────────────────────
-            await app.bot.delete_webhook(drop_pending_updates=True)
-            log.info("POLLING MODU (local) — Webhook temizlendi.")
-            # Conflict varsa bekle ve tekrar dene (eski instance'ın ölmesini bekle)
-            for attempt in range(1, 6):
-                try:
-                    await app.bot.delete_webhook(drop_pending_updates=True)
-                    await app.updater.start_polling(
-                        drop_pending_updates=True,
-                        allowed_updates=["message", "callback_query"],
-                        error_callback=lambda exc: log.warning(f"Polling hatası (geçici): {exc}"),
-                    )
-                    log.info(f"Bot polling aktif (deneme {attempt}).")
-                    break
-                except Exception as poll_err:
-                    if "Conflict" in str(poll_err) and attempt < 5:
-                        log.warning(f"Conflict — eski instance ölüyor, {30*attempt}s bekleniyor... (deneme {attempt}/5)")
-                        await asyncio.sleep(30 * attempt)
-                    else:
-                        raise
-
-        try:
-            while True:
-                await asyncio.sleep(1)
-        except (KeyboardInterrupt, SystemExit):
-            log.info("Kapatiliyor...")
-        finally:
-            scheduler.shutdown(wait=False)
-            await app.updater.stop()
-            await app.stop()
+    log = logging.getLogger("scheduler")
+    log.info(f"✅ Zamanlayıcı: her gün {config.DAILY_HOUR:02d}:{config.DAILY_MINUTE:02d} TR saati")
+    return scheduler
 
 
-# ─── DRY RUN ─────────────────────────────────────────────────────────────────
-async def dry_run():
-    log = setup_logging()
-    log.info("🔧 DRY RUN modu (Telegram yok)")
-    await memory.init()
-    dm = DataMesh()
-    bundle = await dm.fetch_all()
-    await dm.close()
-    print(f"\n📊 Veri: intel={len(bundle.intel)}, dev={len(bundle.dev_velocity)}, hn={len(bundle.hn_signal)}")
-    vector = DiversityEngine.today_vector()
-    print(f"🔭 Vektör: {vector['cognitive_frame']} | {vector['domain_focus']} | {vector['weekday']}")
-    print("✅ Dry run tamamlandı.")
-
-
-# ═════════════════════════════════════════════════════════════════════════════
-# GİRİŞ NOKTASI
-# ═════════════════════════════════════════════════════════════════════════════
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description="Nexa Deep Intelligence v6.0")
+    log = setup_logging()
+    log.info("=" * 55)
+    log.info("  NEXA DEEP INTELLIGENCE v6.0 — WEB MODE")
+    log.info(f"  {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    log.info("=" * 55)
+
+    parser = argparse.ArgumentParser(description="Nexa Deep Intelligence v6.0 — Web")
     parser.add_argument("--mode", choices=["run", "dry-run"], default="run")
     args = parser.parse_args()
 
-    if args.mode == "run":
-        asyncio.run(main())
-    elif args.mode == "dry-run":
-        asyncio.run(dry_run())
+    if args.mode == "dry-run":
+        async def _dry():
+            await memory.init()
+            dm = DataMesh()
+            bundle = await dm.fetch_all()
+            await dm.close()
+            print(f"intel={len(bundle.intel)}, dev={len(bundle.dev_velocity)}, hn={len(bundle.hn_signal)}")
+            v = DiversityEngine.today_vector()
+            print(f"Vector: {v['cognitive_frame']} | {v['domain_focus']}")
+        asyncio.run(_dry())
+    else:
+        # Hafızayı init et
+        asyncio.run(memory.init())
+        log.info("✅ Hafıza motoru başlatıldı.")
+
+        # Scheduler başlat
+        scheduler = start_scheduler()
+
+        PORT = int(os.getenv("PORT", 5000))
+        log.info(f"🌐 Web server: http://0.0.0.0:{PORT}")
+        log.info(f"🔑 Şifre: {WEB_PASSWORD} (WEB_PASSWORD env değiştirilebilir)")
+        log.info(f"⏰ Günlük rapor: {config.DAILY_HOUR:02d}:{config.DAILY_MINUTE:02d} TR")
+
+        flask_app.run(host="0.0.0.0", port=PORT, threaded=True, debug=False)
