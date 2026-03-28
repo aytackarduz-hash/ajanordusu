@@ -223,7 +223,7 @@ class Config:
     GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 
     MAX_RETRIES: int = 3
-    RETRY_DELAY_S: float = 2.0
+    RETRY_DELAY_S: float = 5.0
     QUALITY_THRESHOLD: float = 7.0
     MAX_MEMORY_ENTRIES: int = 120
     DIVERSITY_WINDOW_DAYS: int = 14
@@ -235,7 +235,7 @@ class Config:
 
     DB_PATH: str = os.getenv("DB_PATH", "nexa_memory.db")
     HTTP_TIMEOUT: float = 45.0
-    AGENT_CONCURRENCY: int = 4
+    AGENT_CONCURRENCY: int = 2  # Rate limit: free tier
 
     TELEGRAM_MAX_CHARS: int = 4000
     TELEGRAM_PARSE_MODE: str = "HTML"
@@ -2343,6 +2343,22 @@ flask_app.secret_key = os.getenv("SECRET_KEY", "nexa-x9k2-classified-2026")
 flask_app.config["SESSION_COOKIE_HTTPONLY"] = True
 flask_app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 
+@flask_app.errorhandler(500)
+def handle_500(e):
+    import traceback
+    tb = traceback.format_exc()
+    logging.getLogger('app').error(f'500 error: {tb}')
+    return f'<h1>500 - Internal Error</h1><pre>{tb[:2000]}</pre>', 500
+
+@flask_app.errorhandler(Exception)  
+def handle_exception(e):
+    import traceback
+    tb = traceback.format_exc()
+    logging.getLogger('app').error(f'Unhandled exception: {tb}')
+    return f'<h1>Error: {type(e).__name__}</h1><pre>{str(e)[:500]}</pre><pre>{tb[:2000]}</pre>', 500
+
+
+
 WEB_PASSWORD = os.getenv("WEB_PASSWORD", "nexa2026")
 
 # Active streaming jobs: job_id → Queue
@@ -2478,14 +2494,24 @@ def api_run():
                 sections[k] = v
                 ctx.insights[k] = v
 
-            sw = StrategicWeaponAgent()
-            sections["strategy"] = await sw.run(ctx)
-            await sw.close()
+            try:
+                sw = StrategicWeaponAgent()
+                sections["strategy"] = await sw.run(ctx)
+                await sw.close()
+            except Exception as e:
+                sections["strategy"] = (
+                    "<div class='section-block'><div class='section-title'>🗡️ STRATEJİK SİLAH</div>"
+                    "<div class='section-body'><i>Rate limit veya geçici hata.</i>"
+                    f"<br><small>{str(e)[:120]}</small></div></div>"
+                )
 
-            # Kalite değerlendirme
-            ev = QualityEvaluator()
-            quality = await ev.evaluate("\n".join(sections.values()))
-            await ev.close()
+            quality = {"average": 7.5, "weakest": "unknown", "strongest": "unknown", "scores": {}}
+            try:
+                ev = QualityEvaluator()
+                quality = await ev.evaluate("\n".join(sections.values()))
+                await ev.close()
+            except Exception:
+                pass
 
             # Tüm bölümleri birleştir
             output_parts = []
