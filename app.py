@@ -3405,19 +3405,19 @@ def setup_logging():
 
 
 def start_scheduler():
-    """APScheduler'ı ayrı thread'de başlat."""
-    import asyncio as _aio
+    """BackgroundScheduler — Flask context'te (event loop olmadan) çalışır."""
+    from apscheduler.schedulers.background import BackgroundScheduler
 
-    async def _run():
-        await memory.init()
-        await _scheduled_web_report()  # ilk çalıştırmayı buraya almak için gerek yok
-        # Sadece scheduler loop'u çalıştır
+    def _job():
+        """Sync wrapper: asyncio.run ile async raporu çalıştır."""
+        try:
+            asyncio.run(_scheduled_web_report())
+        except Exception as e:
+            logging.getLogger("scheduler").error(f"Scheduler job error: {e}")
 
-    scheduler = AsyncIOScheduler(timezone="Europe/Istanbul")
+    scheduler = BackgroundScheduler(timezone="Europe/Istanbul")
     scheduler.add_job(
-        lambda: threading.Thread(
-            target=lambda: asyncio.run(_scheduled_web_report()), daemon=True
-        ).start(),
+        _job,
         "cron",
         hour=config.DAILY_HOUR,
         minute=config.DAILY_MINUTE,
