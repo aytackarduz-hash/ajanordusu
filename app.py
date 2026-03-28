@@ -2628,13 +2628,17 @@ def api_stream(job_id):
         return Response(err(), mimetype="text/event-stream")
 
     def generate():
+        deadline = time.time() + 420  # 7 dakika max
         try:
             while True:
-                try:
-                    item = q.get(timeout=180)
-                except stdlib_queue.Empty:
-                    yield f"data: {json.dumps({'error': 'Timeout'})}\n\n"
+                if time.time() > deadline:
+                    yield f"data: {json.dumps({'error': 'Zaman asimi (7dk)'})}\n\n"
                     break
+                try:
+                    item = q.get(timeout=18)
+                except stdlib_queue.Empty:
+                    yield ": heartbeat\n\n"
+                    continue
                 if item is None:
                     break
                 event_type, payload = item
@@ -3405,7 +3409,6 @@ def setup_logging():
 
 def start_scheduler():
     """BackgroundScheduler — Flask context'te (event loop olmadan) çalışır."""
-
     def _job():
         """Sync wrapper: asyncio.run ile async raporu çalıştır."""
         try:
