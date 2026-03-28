@@ -2885,14 +2885,20 @@ async def main():
 
     async with app:
         await app.initialize()
+        # Onceki instancein webhook/polling cakismasini temizle
+        await app.bot.delete_webhook(drop_pending_updates=True)
+        log.info("Webhook temizlendi, polling basliyor...")
         await app.start()
-        await app.updater.start_polling(drop_pending_updates=True)
-        log.info("✅ Bot polling aktif. Durdurmak için Ctrl+C.")
+        await app.updater.start_polling(
+            drop_pending_updates=True,
+            allowed_updates=["message", "callback_query"],
+        )
+        log.info("Bot polling aktif. Durdurmak icin Ctrl+C.")
         try:
             while True:
                 await asyncio.sleep(1)
         except (KeyboardInterrupt, SystemExit):
-            log.info("⛔ Kapatılıyor...")
+            log.info("Kapatiliyor...")
         finally:
             scheduler.shutdown(wait=False)
             await app.updater.stop()
