@@ -2883,17 +2883,47 @@ async def main():
     log.info("🤖 Telegram bot başlatılıyor...")
     log.info("Komutlar: /report /research /proptech /longevity /ai /crypto /idea /osint")
 
+    # ── WEBHOOK vs POLLING otomatik seçimi ──────────────────────────────────
+    # Render ve cloud platformlar PORT env variable set eder.
+    # Local geliştirmede PORT yoktur → polling.
+    PORT = int(os.getenv("PORT", 0))
+    WEBHOOK_URL = os.getenv("WEBHOOK_URL", "") or os.getenv("RENDER_EXTERNAL_URL", "")
+    USE_WEBHOOK = bool(PORT and WEBHOOK_URL)
+
     async with app:
         await app.initialize()
-        # Onceki instancein webhook/polling cakismasini temizle
-        await app.bot.delete_webhook(drop_pending_updates=True)
-        log.info("Webhook temizlendi, polling basliyor...")
         await app.start()
-        await app.updater.start_polling(
-            drop_pending_updates=True,
-            allowed_updates=["message", "callback_query"],
-        )
-        log.info("Bot polling aktif. Durdurmak icin Ctrl+C.")
+
+        if USE_WEBHOOK:
+            # ── WEBHOOK MODU (Render / Production) ──────────────────────────
+            webhook_path = f"/{config.TELEGRAM_BOT_TOKEN}"
+            full_webhook_url = f"{WEBHOOK_URL.rstrip('/')}{webhook_path}"
+
+            await app.bot.set_webhook(
+                url=full_webhook_url,
+                allowed_updates=["message", "callback_query"],
+                drop_pending_updates=True,
+            )
+            log.info(f"WEBHOOK MODU — Port: {PORT} | URL: {full_webhook_url[:60]}...")
+
+            await app.updater.start_webhook(
+                listen="0.0.0.0",
+                port=PORT,
+                url_path=config.TELEGRAM_BOT_TOKEN,
+                webhook_url=full_webhook_url,
+                drop_pending_updates=True,
+            )
+            log.info("Bot webhook aktif. Tek instance garantili.")
+        else:
+            # ── POLLING MODU (Local geliştirme) ─────────────────────────────
+            await app.bot.delete_webhook(drop_pending_updates=True)
+            log.info("POLLING MODU (local) — Webhook temizlendi.")
+            await app.updater.start_polling(
+                drop_pending_updates=True,
+                allowed_updates=["message", "callback_query"],
+            )
+            log.info("Bot polling aktif.")
+
         try:
             while True:
                 await asyncio.sleep(1)
